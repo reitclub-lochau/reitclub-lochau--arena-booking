@@ -919,7 +919,7 @@ async function loadMembers(){
       approve.onclick=async()=>{
         const {error}=await db.rpc(
           'approve_member',
-          {p_member_id:m.id}
+          {target_member_id.:m.id}
         );
 
         if(error){
@@ -940,8 +940,8 @@ async function loadMembers(){
         const {error}=await db.rpc(
           'set_member_active',
           {
-            p_member_id:m.id,
-            p_active:!m.active
+           target_member_id:m.id,
+new_status:!m.active
           }
         );
 
