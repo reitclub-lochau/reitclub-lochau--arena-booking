@@ -513,11 +513,16 @@ async function loadBookings(){
     String(d.getDate()).padStart(2,'0');
 
   const {data,error}=await db
-    .from('bookings')
-    .select('id,member_id,facility_id,booking_date,start_hour')
-    .eq('facility_id',facility)
-    .gte('booking_date',format(start))
-    .lte('booking_date',format(end));
+  .from('booking_calendar')
+  .select('id,facility_id,facility_name,booking_date,start_hour,member_name')
+  .eq('facility_id',facility)
+  .gte('booking_date',format(start))
+  .lte('booking_date',format(end));
+    
+  
+    
+    
+    
 
   if(error){
     console.error(error);
