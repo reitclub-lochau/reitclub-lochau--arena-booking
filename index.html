@@ -636,10 +636,10 @@ hours.forEach(hour => {
 
   const entry = document.createElement('div');
   entry.className = 'booking-entry';
-
+entry.style.whiteSpace = 'pre-line';
   entry.textContent =
-    String(hour).padStart(2, '0') +
-    ':00 · ' + count + '/' + capacity;
+  String(hour).padStart(2, '0') + ' Uhr\n' +
+  count + '/' + capacity;
 
   cell.appendChild(entry);
 });
