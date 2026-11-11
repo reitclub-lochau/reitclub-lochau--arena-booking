@@ -234,7 +234,14 @@ td,th {
 
 <section id="login" class="card">
   <h2>Mitglieder-Login</h2>
-
+<input
+  id="username"
+  type="text"
+  placeholder="Benutzername (3–30 Zeichen)"
+  maxlength="30"
+  autocomplete="off"
+  style="display:none"
+>
   <input id="email" type="email"
          placeholder="E-Mail-Adresse">
 
@@ -425,6 +432,17 @@ async function login(){
 // REGISTRIERUNG
 
 async function register(){
+const usernameField = document.getElementById('username');
+
+usernameField.style.display = 'block';
+
+const username = usernameField.value.trim();
+
+if (!/^[A-Za-z0-9_-]{3,30}$/.test(username)) {
+  showMessage('Bitte einen Benutzernamen mit 3–30 Zeichen eingeben.');
+  usernameField.focus();
+  return;
+}
 
   const email=
     document.getElementById('email').value;
@@ -438,8 +456,14 @@ async function register(){
   }
 
   const {error}=await db.auth.signUp({
-    email,password
-  });
+  email,
+  password,
+  options: {
+    data: {
+      username: username
+    }
+  }
+});
 
   if(error){
     showMessage(error.message);
