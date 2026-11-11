@@ -685,13 +685,35 @@ function renderWeek(calendar){
       b=>b.booking_date===formatDate(date)
     );
 
-    dayBookings.forEach(b=>{
-      const slot=document.createElement('div');
-      slot.className='slot full';
-      slot.textContent=
-        String(b.start_hour).padStart(2,'0') + ':00 – ' + (b.member_name || 'Unbekannt');
-      column.appendChild(slot);
-    });
+    const capacity = {
+  halle: 2,
+  gross: 4,
+  klein: 2,
+  longierzirkel: 1
+}[document.getElementById('facility').value];
+
+const hours = [...new Set(
+  dayBookings.map(b => b.start_hour)
+)].sort((a, b) => a - b);
+
+hours.forEach(hour => {
+  const count = dayBookings.filter(
+    b => b.start_hour === hour
+  ).length;
+
+  const slot = document.createElement('div');
+  slot.className = count >= capacity
+    ? 'slot full'
+    : 'slot';
+
+  slot.style.whiteSpace = 'pre-line';
+
+  slot.textContent =
+    String(hour).padStart(2, '0') + ' Uhr\n' +
+    count + '/' + capacity;
+
+  column.appendChild(slot);
+});
 
     column.onclick=()=>{
       currentDate=date;
