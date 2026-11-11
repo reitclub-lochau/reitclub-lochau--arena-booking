@@ -242,7 +242,7 @@ td,th {
 
   <!-- KALENDER -->
 
-  <div class="card">
+  <div class="card hidden" id="calendarCard">
 
     <h2>Belegungskalender</h2>
 
@@ -290,7 +290,7 @@ td,th {
 
   <!-- BUCHUNG -->
 
-  <div class="card" id="bookingCard">
+  <div class="card hidden" id="bookingCard">
 
     <h2>Neue Buchung</h2>
 
@@ -310,7 +310,7 @@ td,th {
 
   <!-- EIGENE BUCHUNGEN -->
 
-  <div class="card">
+  <div class="card hidden" id="myBookingsCard">
     <h2>Meine Buchungen</h2>
     <div id="myBookings"></div>
   </div>
@@ -457,12 +457,13 @@ async function startApp(authUser){
     .textContent='Willkommen, '+member.full_name;
 
   const active=member.active && member.approved;
-
+document.getElementById('calendarCard').classList.toggle('hidden', !active);
   document.getElementById('memberStatus')
     .textContent=active
       ? 'Mitgliedskonto aktiv ✓'
       : 'Dein Zugang wartet auf Freischaltung.';
-
+document.getElementById('bookingCard').classList.toggle('hidden', !active);
+document.getElementById('myBookingsCard').classList.toggle('hidden', !active);
   if(member.role==='admin'){
     document.getElementById('adminPanel')
       .classList.remove('hidden');
