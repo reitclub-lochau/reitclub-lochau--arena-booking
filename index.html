@@ -738,16 +738,35 @@ slot.textContent =
       
       
 
-    slot.onclick=()=>{
-      document.getElementById('bookingDate')
-        .value=date;
+    slot.onclick = async () => {
+  if (count >= capacity) {
+    alert('Dieser Zeitraum ist bereits vollständig belegt.');
+    return;
+  }
 
-      document.getElementById('bookingHour')
-        .value=h;
+  const uhrzeit = String(h).padStart(2, '0') + ':00';
 
-      document.getElementById('bookingCard')
-        .scrollIntoView({behavior:'smooth'});
-    };
+  if (!confirm(
+    'Möchtest du die Anlage am ' + date +
+    ' um ' + uhrzeit + ' Uhr buchen?'
+  )) return;
+
+  const { error } = await db.rpc('book_slot', {
+    p_facility: facility,
+    p_date: date,
+    p_hour: h
+  });
+
+  if (error) {
+    alert('Buchung nicht möglich: ' + error.message);
+    return;
+  }
+
+  alert('Buchung erfolgreich!');
+
+  await loadBookings();
+  await loadMyBookings();
+};
 
     calendar.appendChild(slot);
   }
