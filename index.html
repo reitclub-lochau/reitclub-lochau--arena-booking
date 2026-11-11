@@ -468,6 +468,7 @@ async function startApp(authUser){
       .classList.remove('hidden');
 
     loadMembers();
+    loadAdminBookings();
   }
 
   if(!active){
@@ -979,7 +980,66 @@ new_status:!m.active
     list.appendChild(box);
   });
 }
+// ADMIN – ALLE BUCHUNGEN
 
+async function loadAdminBookings() {
+  if (!member || member.role !== 'admin') return;
+
+  const container = document.getElementById('adminBookings');
+  if (!container) return;
+
+  container.textContent = 'Buchungen werden geladen ...';
+
+  const { data, error } = await db
+    .from('booking_calendar')
+    .select('id,facility_name,booking_date,start_hour,member_name')
+    .order('booking_date', { ascending: true })
+    .order('start_hour', { ascending: true });
+
+  if (error) {
+    container.textContent = 'Fehler: ' + error.message;
+    return;
+  }
+
+  container.innerHTML = '';
+
+  (data || []).forEach(b => {
+    const box = document.createElement('div');
+    box.className = 'status';
+
+    const info = document.createElement('p');
+    info.textContent =
+      b.booking_date + ' – ' +
+      b.facility_name + ' – ' +
+      String(b.start_hour).padStart(2, '0') + ':00 Uhr – ' +
+      b.member_name;
+
+    box.appendChild(info);
+   const cancelButton = document.createElement('button');
+cancelButton.textContent = 'Stornieren';
+cancelButton.style.backgroundColor = '#a34b47';
+
+cancelButton.onclick = async () => {
+  if (!confirm('Diese Buchung wirklich stornieren?')) return;
+
+  const { error } = await db
+    .from('bookings')
+    .delete()
+    .eq('id', b.id);
+
+  if (error) {
+    alert('Stornierung fehlgeschlagen: ' + error.message);
+    return;
+  }
+
+  await loadAdminBookings();
+  await loadBookings();
+  await loadMyBookings();
+};
+
+box.appendChild(cancelButton); container.appendChild(box);
+  });
+}
 // ABMELDEN
 
 async function logout(){
