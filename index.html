@@ -1056,7 +1056,7 @@ async function loadMembers(){
     box.className='status';
 
     const title=document.createElement('strong');
-    title.textContent=m.full_name+' – '+m.role;
+    title.textContent=(m.username || m.full_name)+' – '+m.role;
 
     box.appendChild(title);
 
