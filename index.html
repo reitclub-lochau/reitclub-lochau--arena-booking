@@ -614,7 +614,7 @@ function renderMonth(calendar){
       entry.className='booking-entry';
 
       entry.textContent=
-        String(b.start_hour).padStart(2,'0')+':00';
+      String(b.start_hour).padStart(2,'0') + ':00 – ' + (b.member_name || 'Unbekannt');
 
       cell.appendChild(entry);
     });
@@ -663,7 +663,7 @@ function renderWeek(calendar){
       const slot=document.createElement('div');
       slot.className='slot full';
       slot.textContent=
-        String(b.start_hour).padStart(2,'0')+':00';
+        String(b.start_hour).padStart(2,'0') + ':00 – ' + (b.member_name || 'Unbekannt');
       column.appendChild(slot);
     });
 
@@ -710,10 +710,23 @@ function renderDay(calendar){
     slot.className='slot '+
       (count>=capacity?'full':'empty');
 
-    slot.textContent=
-      String(h).padStart(2,'0')+
-      ':00 Uhr – '+count+'/'+capacity+
-      ' Plätze belegt';
+    const slotBookings = bookings.filter(
+  b => b.booking_date === date &&
+       b.start_hour === h
+);
+
+const names = slotBookings
+  .map(b => b.member_name || 'Unbekannt')
+  .join(', ');
+
+slot.textContent =
+  String(h).padStart(2, '0') +
+  ':00 Uhr – ' + count + '/' + capacity +
+  ' Plätze belegt' +
+  (names ? ' | ' + names : '');
+      
+      
+      
 
     slot.onclick=()=>{
       document.getElementById('bookingDate')
