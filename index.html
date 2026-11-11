@@ -542,9 +542,10 @@ async function loadBookings(){
     
 
   if(error){
-    console.error(error);
-    return;
-  }
+  alert('Kalenderfehler: ' + error.message);
+  console.error(error);
+  return;
+}
 
   bookings=data || [];
 
