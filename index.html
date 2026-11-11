@@ -618,16 +618,32 @@ function renderMonth(calendar){
     const dayBookings=bookings.filter(
       b=>b.booking_date===dateString
     );
+const capacity = {
+  halle: 2,
+  gross: 4,
+  klein: 2,
+  longierzirkel: 1
+}[document.getElementById('facility').value];
 
-    dayBookings.forEach(b=>{
-      const entry=document.createElement('div');
-      entry.className='booking-entry';
+const hours = [...new Set(
+  dayBookings.map(b => b.start_hour)
+)].sort((a, b) => a - b);
 
-      entry.textContent=
-      String(b.start_hour).padStart(2,'0') + ':00 – ' + (b.member_name || 'Unbekannt');
+hours.forEach(hour => {
+  const count = dayBookings.filter(
+    b => b.start_hour === hour
+  ).length;
 
-      cell.appendChild(entry);
-    });
+  const entry = document.createElement('div');
+  entry.className = 'booking-entry';
+
+  entry.textContent =
+    String(hour).padStart(2, '0') +
+    ':00 · ' + count + '/' + capacity;
+
+  cell.appendChild(entry);
+});
+  
 
     cell.onclick=()=>{
       currentDate=date;
