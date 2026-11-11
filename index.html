@@ -757,10 +757,14 @@ slot.textContent =
     p_hour: h
   });
 
-  if (error) {
+if (error) {
+  if (error.code === '23505') {
+    alert('Du hast diese Anlage für diesen Zeitraum bereits gebucht.');
+  } else {
     alert('Buchung nicht möglich: ' + error.message);
-    return;
   }
+  return;
+}
 
   alert('Buchung erfolgreich!');
 
