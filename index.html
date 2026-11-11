@@ -155,7 +155,25 @@ button.danger {
   padding: 2px;
 }
 
+/* Ampelfarben für den Belegungskalender */
 
+.slot-free,
+.booking-entry.slot-free {
+  background-color: #d9f0df !important;
+  color: #205b35 !important;
+}
+
+.slot-partial,
+.booking-entry.slot-partial {
+  background-color: #fff0b3 !important;
+  color: #765600 !important;
+}
+
+.slot-full,
+.booking-entry.slot-full {
+  background-color: #f6caca !important;
+  color: #8b2424 !important;
+}
 .slot {
   padding:8px 3px;
   margin:4px 0;
@@ -649,7 +667,12 @@ hours.forEach(hour => {
   ).length;
 
   const entry = document.createElement('div');
-  entry.className = 'booking-entry';
+entry.className = 'booking-entry ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
 entry.style.whiteSpace = 'pre-line';
   entry.textContent =
   String(hour).padStart(2, '0') + ' Uhr\n' +
@@ -716,9 +739,12 @@ hours.forEach(hour => {
   ).length;
 
   const slot = document.createElement('div');
-  slot.className = count >= capacity
-    ? 'slot full'
-    : 'slot';
+  slot.className = 'slot ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
 
   slot.style.whiteSpace = 'pre-line';
 
@@ -769,8 +795,12 @@ function renderDay(calendar){
 
     const slot=document.createElement('div');
 
-    slot.className='slot '+
-      (count>=capacity?'full':'empty');
+    slot.className = 'slot ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
 
     const slotBookings = bookings.filter(
   b => b.booking_date === date &&
