@@ -549,7 +549,12 @@ async function loadBookings(){
 
   bookings=data || [];
 
+  try {
   renderCalendar();
+} catch (err) {
+  alert('Anzeigefehler: ' + err.message);
+  console.error(err);
+}
 }
 
 // KALENDER
