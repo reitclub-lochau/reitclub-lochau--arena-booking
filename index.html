@@ -135,19 +135,26 @@ button.danger {
 }
 
 .week-grid {
-  display:grid;
-  grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:4px;
-  overflow-x:auto;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
 }
 
 .week-day {
-  min-width:75px;
-  background:#f4f6f3;
-  padding:7px;
-  border-radius:7px;
-  font-size:12px;
+  min-width: 0;
+  background: #f4f6f3;
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 10px;
+  overflow-wrap: anywhere;
 }
+
+.week-day .slot {
+  font-size: 10px;
+  padding: 2px;
+}
+
 
 .slot {
   padding:8px 3px;
