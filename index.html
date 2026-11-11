@@ -560,10 +560,50 @@ function renderCalendar(){
 
   calendar.innerHTML='';
 
-  document.getElementById('monthTitle')
-    .textContent=currentDate.toLocaleDateString(
-      'de-DE',{month:'long',year:'numeric'}
-    );
+const label = document.getElementById('monthLabel');
+
+if (view === 'week') {
+  const monday = new Date(currentDate);
+
+  monday.setDate(
+    monday.getDate() - ((monday.getDay() + 6) % 7)
+  );
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const d = new Date(Date.UTC(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate()
+  ));
+
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+
+  const yearStart = new Date(
+    Date.UTC(d.getUTCFullYear(), 0, 1)
+  );
+
+  const kw = Math.ceil(
+    (((d - yearStart) / 86400000) + 1) / 7
+  );
+
+  const fmt = date => date.toLocaleDateString(
+    'de-DE',
+    { day: '2-digit', month: '2-digit' }
+  );
+
+  label.textContent =
+    'KW ' + kw + ' | ' +
+    fmt(monday) + '–' +
+    sunday.toLocaleDateString('de-DE');
+
+} else {
+  label.textContent = currentDate.toLocaleDateString(
+    'de-DE',
+    { month: 'long', year: 'numeric' }
+  );
+}
 
   if(view==='month'){
     renderMonth(calendar);
