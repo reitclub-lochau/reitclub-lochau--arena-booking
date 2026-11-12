@@ -839,7 +839,10 @@ function renderDay(calendar){
 );
 
 const names = slotBookings
-  .map(b => b.member_name || 'Unbekannt')
+  .map(b =>
+    (b.member_name || 'Unbekannt') +
+    (b.note ? ' – ' + b.note : '')
+  )
   .join(', ');
 
 slot.textContent =
@@ -863,11 +866,12 @@ slot.textContent =
     'Möchtest du die Anlage am ' + date +
     ' um ' + uhrzeit + ' Uhr buchen?'
   )) return;
-
+const note = (prompt('Notiz zur Buchung (optional, max. 100 Zeichen):') || '').trim().slice(0, 100);
   const { error } = await db.rpc('book_slot', {
     p_facility: facility,
     p_date: date,
-    p_hour: h
+    p_hour: h,
+p_note: note
   });
 
 if (error) {
