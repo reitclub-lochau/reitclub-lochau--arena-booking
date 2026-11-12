@@ -580,7 +580,7 @@ async function loadBookings(){
 
   const {data,error}=await db
   .from('booking_calendar')
-  .select('id,facility_id,facility_name,booking_date,start_hour,member_name')
+  .select('id,facility_id,facility_name,booking_date,start_hour,member_name,note')
   .eq('facility_id',facility)
   .gte('booking_date',format(start))
   .lte('booking_date',format(end));
