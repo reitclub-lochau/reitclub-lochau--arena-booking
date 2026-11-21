@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reitclub Lochau – Arena Booking · Stallmanagement V12</title>
+<link rel="apple-touch-icon" href="reitclub_lochau_app_icon.png">
+<link rel="icon" type="image/png" href="reitclub_lochau_app_icon.png">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  header img {
+  max-width:140px;
+  width:100%;
+  height:auto;
+  display:block;
+  margin:0 auto 10px;
+}
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f6f3;
+  color:#26352c;
+}
+
+header {
+  background:#F5F2EB;
+  color:#29352F;
+  padding:16px;
+  text-align:center;
+}
+
+
+header h1 {
+  margin:0;
+  font-size:23px;
+}
+
+header p {
+  margin:7px 0 0;
+  color:#66736B;
+}
+
+main {
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
+
+.card {
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:16px;
+  box-shadow:0 2px 8px #0000000c;
+}
+
+input,select,button {
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:15px;
+  margin:4px 0;
+}
+
+input,select {
+  width:100%;
+}
+
+button {
+  cursor:pointer;
+  background:#326d49;
+  color:white;
+  border:0;
+  font-weight:bold;
+}
+
+button.secondary {
+  background:#e8eee9;
+  color:#244b36;
+}
+
+button.danger {
+  background:#a94442;
+}
+
+.hidden { display:none; }
+
+.controls {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.controls button {
+  flex:1;
+}
+
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+  grid-auto-rows: min-content;
+align-content: start;
+}
+
+.dayname {
+  text-align:center;
+  font-weight:bold;
+  padding:8px 0;
+  font-size:12px;
+}
+
+.day {
+  background:#f4f6f3;
+  border-radius:7px;
+  min-height:55px;
+  align-self: start;
+  padding:5px;
+  font-size:12px;
+  overflow:hidden;
+}
+
+.day.today {
+  border:2px solid #326d49;
+}
+
+.day.other {
+  opacity:.4;
+}
+
+.day-number {
+  font-weight:bold;
+  margin-bottom:2px;
+}
+
+.booking-entry {
+  background:#dcecdf;
+  color:#244b36;
+  border-radius:4px;
+  padding:3px;
+  margin-bottom:3px;
+  font-size:10px;
+  overflow-wrap:anywhere;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+}
+
+.week-day {
+  min-width: 0;
+  background: #f4f6f3;
+  padding: 3px;
+  border-radius: 5px;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.week-day .slot {
+  font-size: 10px;
+  padding: 2px;
+}
+
+/* Ampelfarben für den Belegungskalender */
+
+.slot-free,
+.booking-entry.slot-free {
+  background-color: #d9f0df !important;
+  color: #205b35 !important;
+}
+
+.slot-partial,
+.booking-entry.slot-partial {
+  background-color: #fff0b3 !important;
+  color: #765600 !important;
+}
+
+.slot-full,
+.booking-entry.slot-full {
+  background-color: #f6caca !important;
+  color: #8b2424 !important;
+}
+.slot {
+  padding:8px 3px;
+  margin:4px 0;
+  border-radius:5px;
+  background:#e3eee5;
+  font-size:11px;
+  cursor:pointer;
+  text-align:center;
+}
+
+.slot.full {
+  background:#f4dddd;
+  cursor:not-allowed;
+}
+
+.slot.empty {
+  background:#e3eee5;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+td,th {
+  border-bottom:1px solid #eee;
+  padding:10px 5px;
+  text-align:left;
+  font-size:13px;
+}
+
+.status {
+  padding:10px;
+  border-radius:8px;
+  background:#e8eee9;
+  margin-bottom:12px;
+}
+
+@media(max-width:550px) {
+  main {padding:10px;}
+  .day {min-height:75px;}
+  .dayname {font-size:10px;}
+  .booking-entry {font-size:9px;}
+}
+/* Stallmanagement – Administratorbereich */
+.stall-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stall-toolbar input{flex:1;min-width:180px}
+.stall-toolbar button{flex:0 0 auto}
+.stall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:14px}
+.stall-horse{border:1px solid #e2e8e2;border-radius:12px;padding:12px;background:#fafcf9}
+.stall-horse img{width:100%;height:135px;object-fit:cover;border-radius:8px;background:#e8eee9}
+.stall-horse h3{margin:10px 0 6px}
+.stall-horse p{margin:5px 0;font-size:13px}
+.stall-list .stall-horse{display:flex;gap:12px;align-items:center;margin:9px 0}
+.stall-list .stall-horse img{width:76px;height:76px;flex-shrink:0}
+.stall-empty{color:#66736b;margin:14px 0}
+
+.stall-form label{display:block;font-weight:bold;margin-top:12px}
+.stall-form textarea{width:100%;min-height:85px;padding:12px;border:1px solid #ccc;border-radius:8px;font:inherit}
+.stall-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.stall-tabs button{flex:1 1 125px}
+.stall-form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.stall-form-actions button{flex:1}
+.stall-contact{border:1px solid #dfe8df;border-radius:10px;padding:12px;margin:10px 0;background:#f8fbf8}
+.stall-contact .small{font-size:13px;color:#526457}
+.stall-contact-actions{display:flex;gap:6px;flex-wrap:wrap}
+.stall-contact-actions button{font-size:13px;padding:9px}
+.stall-inline{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:550px){.stall-inline{grid-template-columns:1fr}}
+.stall-contact-editor{border:1px solid #b8d4bf;border-radius:12px;padding:14px;margin:12px 0;background:#f1f8f2}
+.stall-contact-editor label{font-size:13px}
+.stall-contact-editor .hint{font-size:12px;color:#526457}
+.stall-list .stall-horse>div{flex:1}
+  .stall-contact-status{font-size:13px}
+  .stall-location-box{border:1px solid #d8e7da;border-radius:12px;padding:14px;margin:12px 0;background:#f7fbf7}
+  .stall-location-box h3{margin:0 0 10px}
+  .stall-location-box label{display:block;font-weight:bold;margin:10px 0 3px}
+  .stall-location-warning{padding:10px;background:#fff2d6;border-radius:8px;font-size:13px}
+  .stall-only-admin.hidden,.stall-only-staff.hidden{display:none}
+  .stall-loc-note{font-size:13px;color:#526457}
+  .stall-quick{border:1px solid #dce9dd;border-radius:12px;padding:12px;background:#f8fbf7;margin:10px 0}
+  .stall-quick h3{margin:0 0 8px}
+  .stall-quick p{white-space:pre-wrap;line-height:1.5}
+  .stall-quick .important{background:#fff2d6;padding:10px;border-radius:8px}
+  .stall-meal{padding:12px;border:1px solid #e0e7df;border-radius:10px;margin:10px 0}
+  .stall-meal textarea{min-height:65px}
+  .stall-meal .meal-status{font-weight:bold;margin-top:8px}
+  .stall-meal select{max-width:400px}
+  .stall-only-admin.hidden{display:none}
+  .stall-compact .stall-tabs{display:none}
+  .stall-compact .stall-quick{padding:10px 12px;margin:7px 0}
+  .stall-compact .stall-quick h3{font-size:16px;margin-bottom:5px}
+  .stall-compact .stall-quick p{margin:5px 0}
+  .stall-compact .stall-meal{padding:8px;margin:6px 0}
+  .stall-compact .stall-meal h3{font-size:15px;margin:0 0 6px}
+  .stall-compact .stall-meal label{margin-top:7px}
+  .stall-compact .stall-meal select{max-width:none}
+  .stall-compact .stall-form-actions{margin-top:10px}
+  .stall-compact .stall-location-box{padding:8px;border:0;margin:4px 0;background:transparent}
+  .stall-compact .stall-location-box h3,.stall-compact .stall-location-box .stall-loc-note{display:none}
+  .stall-compact #ovCurrent{font-weight:bold}
+  .stall-compact .stall-quick button{width:100%}
+  .compact-feed-line{margin:5px 0 7px;white-space:pre-wrap;line-height:1.4}
+  @media(min-width:750px){.stall-compact #stallTabOverview{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stall-compact #stallOverviewStatus{grid-column:1/-1}}
+
+
+/* V8: Alle Pferdeinformationen direkt in der Pferdeübersicht */
+.stall-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px;margin-top:14px}
+.stall-overview-grid .stall-horse{padding:14px;background:white;border:1px solid #d9e6dc;border-radius:13px}
+.stall-overview-grid .stall-horse h3{margin:0 0 7px;font-size:19px}
+.stall-overview-grid .stall-horse img{height:110px;margin-bottom:10px}
+.stall-card-section{border-top:1px solid #e4ece5;padding-top:9px;margin-top:9px}
+.stall-card-section strong{display:block;margin-bottom:5px;color:#27553b}
+.stall-card-section p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.4}
+.stall-card-plan{font-size:13px;color:#46564b}
+.stall-card-feed{display:grid;gap:6px}
+.stall-card-feed-row{padding:8px;background:#f6f9f5;border-radius:8px}
+.stall-card-feed-row>div{overflow-wrap:anywhere;white-space:pre-wrap}
+.stall-card-feed-row .stall-card-feed-state{font-size:12px;margin-top:4px;font-weight:bold}
+.stall-card-feed-row select{width:100%;padding:8px;font-size:13px}
+.stall-card-feed-row button{padding:8px 10px;font-size:12px;margin-top:5px;width:100%}
+.stall-card-feed-row .stall-feed-comment{font:inherit;width:100%;min-height:55px;border:1px solid #bbb;border-radius:8px;padding:8px;margin-top:5px}
+.stall-card-warning{background:#fff2d6;border-radius:7px;padding:8px}
+.stall-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.stall-card-actions button{flex:1;padding:9px;font-size:13px}
+.stall-cards-hint{font-size:13px;color:#526457;margin:8px 0}
+@media(max-width:550px){.stall-overview-grid{grid-template-columns:1fr;gap:9px}.stall-overview-grid .stall-horse{padding:11px}.stall-card-section{padding-top:7px;margin-top:7px}}
+
+/* V11: feste Boxbelegung in räumlicher Reihenfolge; zusammenstehende Pferde je Box */
+.stall-folding-box{border:1px solid #bfd4c2;border-radius:9px;margin:7px 0;background:#f4f8f3;overflow:hidden}
+.stall-folding-box-title{padding:12px 11px;font-size:15px;font-weight:700;cursor:pointer;list-style-position:inside;background:#edf5ed}
+.stall-folding-box-body{padding:4px 9px 8px}
+.stall-folding-box .stall-folding-horse{margin:5px 0}
+/* V9: Nach Stammbereichen gegliederte Akkordeonübersicht, für alle Rollen */
+.stall-folding-list{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.stall-folding-group{background:#fff;border:1px solid #d7e5d9;border-radius:12px;overflow:hidden}
+.stall-folding-group-title{padding:15px;font-weight:700;font-size:16px;background:#e9f2eb;cursor:pointer;list-style-position:inside}
+.stall-folding-group-body{padding:7px 10px 10px}
+.stall-folding-horse{border:1px solid #e4ece4;border-radius:9px;margin:6px 0;background:#fff;overflow:hidden}
+.stall-folding-horse-title{font-weight:bold;font-size:16px;cursor:pointer;padding:13px 12px;background:#fafcf9;list-style-position:inside}
+.stall-folding-horse[open]>.stall-folding-horse-title{background:#f0f7f0}
+.stall-folding-horse-body{padding:9px 12px 14px}
+.stall-folding-horse-body label{display:block;font-weight:bold;margin:8px 0 3px;font-size:13px}
+.stall-folding-horse-body .stall-card-actions button{width:100%}
+@media(max-width:550px){.stall-folding-group-title{padding:13px 10px}.stall-folding-horse-body{padding:8px}}
+</style>
+</head>
+
+<body>
+
+<header>
+ <img src="logo_reiterhof_kreipe.png" alt="Reiterhof Kreipe Logo"> 
+  <h1>🐎 Reitclub Lochau</h1>
+  <p>Arena Booking – Online-Belegungsplan</p>
+</header>
+
+<main>
+
+<!-- LOGIN -->
+
+<section id="login" class="card">
+  <h2>Mitglieder-Login</h2>
+<input
+  id="username"
+  type="text"
+  placeholder="Benutzername (3–30 Zeichen)"
+  maxlength="30"
+  autocomplete="off"
+  style="display:none"
+>
+  <input id="email" type="email"
+         placeholder="E-Mail-Adresse">
+
+  <input id="password" type="password"
+         placeholder="Passwort">
+
+  <button onclick="login()">Anmelden</button>
+
+  <button class="secondary"
+          onclick="register()">
+    Neues Mitglied registrieren
+  </button>
+
+  <p id="loginMessage"></p>
+</section>
+
+<!-- APP -->
+
+<section id="app" class="hidden">
+
+  <div class="card">
+    <div id="welcome"></div>
+    <div id="memberStatus" class="status"></div>
+
+    <button class="secondary"
+            onclick="logout()">
+      Abmelden
+    </button>
+  </div>
+
+  <!-- KALENDER -->
+
+  <div class="card hidden" id="calendarCard">
+
+    <h2>Belegungskalender</h2>
+
+    <select id="facility"
+            onchange="loadBookings()">
+      <option value="halle">Reithalle</option>
+      <option value="gross">Großer Reitplatz</option>
+      <option value="klein">Kleiner Reitplatz</option>
+      <option value="longierzirkel">Longierzirkel</option>
+    </select>
+
+    <div class="controls">
+      <button class="secondary"
+              onclick="changeMonth(-1)">◀</button>
+
+      <button class="secondary"
+              onclick="goToday()">Heute</button>
+
+      <button class="secondary"
+              onclick="changeMonth(1)">▶</button>
+    </div>
+
+    <h3 id="monthLabel"></h3>
+
+    <div class="controls">
+      <button id="monthBtn"
+              onclick="setView('month')">
+        Monat
+      </button>
+
+      <button class="secondary"
+              onclick="setView('week')">
+        Woche
+      </button>
+
+      <button class="secondary"
+              onclick="setView('day')">
+        Tag
+      </button>
+    </div>
+<div style="display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; font-size:14px;">
+  <span>🟢 Frei</span>
+  <span>🟡 Teilweise belegt</span>
+  <span>🔴 Ausgebucht</span>
+</div>
+    <div id="calendar" style="margin-top:15px"></div>
+
+  </div>
+
+  <!-- BUCHUNG -->
+
+  <div class="card hidden" id="bookingCard">
+
+    <h2>Neue Buchung</h2>
+
+    <label>Datum</label>
+    <input type="date" id="bookingDate">
+
+    <label>Uhrzeit</label>
+    <select id="bookingHour"></select>
+
+    <button onclick="makeBooking()">
+      Platz buchen
+    </button>
+
+    <p id="bookingMessage"></p>
+
+  </div>
+
+  <!-- EIGENE BUCHUNGEN -->
+
+  <div class="card hidden" id="myBookingsCard">
+    <h2>Meine Buchungen</h2>
+    <div id="myBookings"></div>
+  </div>
+
+  <!-- STALLMANAGEMENT: sichere Leseansicht, nur Admin -->
+  <div class="card hidden" id="stallCard">
+    <h2>🐴 Stallmanagement – Pferdeübersicht · V12</h2>
+    <p>58 Pferde mit Ganzjahresplan (08:00–18:00 Uhr): nach festem Stammbereich und Boxenreihenfolge. Der aktuelle Ist-Standort wird separat angezeigt. Fütterungsbestätigungen bleiben deaktiviert.</p>
+    <div class="stall-toolbar">
+      <button onclick="openStallHorseForm()">+ Pferd hinzufügen</button>
+      <button class="secondary" onclick="openStallHorseForm()">Pferdeverwaltung</button>
+      <input id="stallSearch" type="search" placeholder="Pferd oder Bereich suchen" aria-label="Pferde suchen" oninput="renderStallHorses()">
+      <button class="secondary" onclick="stallToggleAllGroups(true)">Alle Bereiche öffnen</button>
+      <button class="secondary" onclick="stallToggleAllGroups(false)">Alle schließen</button>
+      <button class="secondary" onclick="loadStallHorses()">↻ Aktualisieren</button>
+    </div>
+    <p id="stallMessage" role="status"></p>
+    <div id="stallTempAlerts" role="status"></div>
+    <div id="stallHorses" class="stall-grid"></div>
+  </div>
+
+  <!-- PFERDEAKTE -->
+  <div class="card hidden stall-form" id="stallHorseFormCard">
+    <h2 id="stallHorseFormTitle">🐴 Pferd hinzufügen</h2>
+    <div class="stall-tabs" role="group" aria-label="Pferdeakte">
+      <button class="secondary" onclick="showStallHorseTab('overview')">🏠 Übersicht</button>
+      <button class="secondary" onclick="showStallHorseTab('master')">Stammdaten</button>
+      <button class="secondary" onclick="showStallHorseTab('owners')">Besitzer</button>
+      <button class="secondary" onclick="showStallHorseTab('location')">Stallplatz</button>
+      <button class="secondary" onclick="showStallHorseTab('feed')">🌾 Fütterung</button>
+      <button class="secondary" onclick="showStallHorseTab('extras')">🧥 Extras</button>
+      <button class="secondary" onclick="showStallHorseTab('health')">Gesundheit</button>
+    </div>
+    <div id="stallTabOverview" class="hidden">
+      <p id="stallOverviewStatus" role="status"></p>
+      <div class="stall-quick"><h3>📍 Aktueller Standort</h3><p id="ovCurrent">Wird geladen …</p><div id="ovInlineLocation"></div><button class="secondary stall-admin-overview" type="button" onclick="showStallHorseTab('location')">Standort ändern</button></div>
+      <div class="stall-quick"><h3>☀️ Tagsüber / 🌙 Nachts</h3><p id="ovPlan">Wird geladen …</p></div>
+      <div class="stall-quick"><h3>🌾 Futterplan</h3><div id="ovMeals"></div><div id="ovInlineFeed"></div><button type="button" class="secondary stall-admin-overview" onclick="showStallHorseTab('feed')">Fütterung öffnen</button></div>
+      <div class="stall-quick"><h3>🧥 Extras & Pflege</h3><p id="ovExtras">Keine Angaben</p></div>
+      <div class="stall-quick"><h3>⚠️ Wichtige Hinweise</h3><p id="ovWarnings" class="important">Keine Angaben</p></div>
+    </div>
+    <div id="stallTabMaster">
+      <label for="stallHorseName">Pferdename *</label>
+      <input id="stallHorseName" maxlength="120" autocomplete="off" required>
+      <label for="stallHorseColor">Farbe (optional)</label>
+      <input id="stallHorseColor" maxlength="120">
+      <label for="stallHorseNotes">Besonderheiten (optional)</label>
+      <textarea id="stallHorseNotes" maxlength="3000"></textarea>
+    </div>
+    <div id="stallTabOwners" class="hidden">
+      <p>Besitzer, Reitbeteiligungen und Notfallkontakte. Änderungen werden direkt gespeichert.</p>
+      <p id="stallContactMessage" role="status" class="stall-contact-status"></p>
+      <div id="stallContactsList"></div>
+      <button id="stallAddContactButton" type="button" onclick="openStallContactEditor()">+ Kontakt zuordnen</button>
+      <div id="stallContactEditor" class="stall-contact-editor hidden">
+        <h3 id="stallContactEditorTitle">Kontakt zuordnen</h3>
+        <label for="stallContactSource">Kontaktart</label>
+        <select id="stallContactSource" onchange="stallContactSourceChanged()">
+          <option value="member">Registriertes Mitglied</option>
+          <option value="external">Externe Person</option>
+        </select>
+        <div id="stallContactMemberFields">
+          <label for="stallContactMember">Mitglied auswählen</label>
+          <select id="stallContactMember"></select>
+          <p class="hint">Name wird aus der Mitgliederverwaltung übernommen. Telefonnummer und E-Mail können für diesen Kontakt ergänzt werden.</p>
+        </div>
+        <div id="stallContactNameFields" class="hidden">
+          <label for="stallContactName">Vor- und Nachname *</label>
+          <input id="stallContactName" maxlength="150" autocomplete="name">
+        </div>
+        <div class="stall-inline">
+          <div><label for="stallContactPhone">Telefonnummer</label><input id="stallContactPhone" type="tel" maxlength="80" autocomplete="tel"></div>
+          <div><label for="stallContactEmail">E-Mail-Adresse</label><input id="stallContactEmail" type="email" maxlength="250" autocomplete="email"></div>
+        </div>
+        <label for="stallContactRole">Zuordnung</label>
+        <select id="stallContactRole">
+          <option value="owner">Besitzer/in</option>
+          <option value="riding_share">Reitbeteiligung</option>
+          <option value="emergency">Weitere Notfallperson</option>
+        </select>
+        <label><input id="stallContactEmergency" type="checkbox" style="width:auto"> Auch als Notfallkontakt kennzeichnen</label>
+        <label for="stallContactPriority">Notfall-Reihenfolge (1 = zuerst anrufen)</label>
+        <input id="stallContactPriority" type="number" min="1" max="999" step="1" placeholder="z. B. 1">
+        <p class="hint">Für eine Notfallperson bitte eine Priorität eintragen. Für Besitzer/Reitbeteiligungen ist sie optional. Bei mehreren Rollen kann dieselbe Person mehrfach zugeordnet werden.</p>
+        <div class="stall-form-actions">
+          <button type="button" id="stallContactSaveButton" onclick="saveStallContact()">Kontakt speichern</button>
+          <button type="button" class="secondary" onclick="closeStallContactEditor()">Abbrechen</button>
+        </div>
+      </div>
+      <p class="hint">Hinweis: Kontaktdaten sind derzeit ausschließlich für Administratoren sichtbar. Mitarbeiterrechte werden später gesondert eingerichtet.</p>
+    </div>
+    <div id="stallTabLocation" class="hidden">
+      <p class="stall-loc-note">📍 <strong>Ist-Standort</strong> ist der zuletzt bestätigte tatsächliche Aufenthaltsort. Der geplante Standort wird davon getrennt angezeigt.</p>
+      <p id="stallLocationStatus" role="status"></p>
+      <div class="stall-location-box" id="stallCurrentLocationBox">
+        <h3>Aktueller Standort</h3>
+        <p id="stallCurrentLocation">Wird geladen …</p>
+        <label for="stallCurrentArea">Stallbereich / Koppel</label>
+        <select id="stallCurrentArea" onchange="stallLocationPlaces('current')"></select>
+        <label for="stallCurrentPlace">Stallplatz (wenn vorhanden)</label>
+        <select id="stallCurrentPlace"></select>
+        <button type="button" onclick="saveStallCurrentLocation()">📍 Standortwechsel speichern</button>
+        <p class="stall-loc-note">Der Wechsel wird protokolliert. Bitte erst speichern, wenn das Pferd tatsächlich umgestellt wurde.</p>
+      </div>
+      <div class="stall-location-box stall-only-admin" id="stallScheduleBox">
+        <h3>☀️🌙 Tages- und Nachtplanung · Administrator</h3>
+        <label for="stallScheduleSeason">Saison</label>
+        <select id="stallScheduleSeason" onchange="loadStallSeasonSchedule()"></select>
+        <div class="stall-inline">
+          <div><label for="stallDayArea">Standort tagsüber</label><select id="stallDayArea" onchange="stallLocationPlaces('day')"></select>
+            <label for="stallDayPlace">Platz tagsüber</label><select id="stallDayPlace"></select>
+            <label for="stallDayTime">Beginn tagsüber</label><input type="time" id="stallDayTime" value="08:00"></div>
+          <div><label for="stallNightArea">Standort nachts</label><select id="stallNightArea" onchange="stallLocationPlaces('night')"></select>
+            <label for="stallNightPlace">Platz nachts</label><select id="stallNightPlace"></select>
+            <label for="stallNightTime">Beginn nachts</label><input type="time" id="stallNightTime" value="18:00"></div>
+        </div>
+        <button type="button" onclick="saveStallSeasonSchedule()">Saisonplan speichern</button>
+        <p class="stall-loc-note">„Ganzjährig“ ist der Standardplan. Die Planung verändert nicht automatisch den bestätigten Ist-Standort. Mittagsrückkehr einzelner Pferde wird später ergänzt.</p>
+      </div>
+      <div class="stall-only-admin"><button type="button" class="secondary" onclick="document.querySelectorAll('.stall-advanced').forEach(el=>el.classList.toggle('hidden'))">Weitere Standortfunktionen (Admin) ein-/ausblenden</button></div>
+      <div class="stall-location-box stall-advanced hidden">
+        <h3>⏳ Zeitlich begrenzte Umstellung</h3>
+        <p class="stall-loc-note">Das Pferd wird jetzt tatsächlich an einen anderen Standort gebracht. Eine geplante Rückkehr erzeugt eine Warnung, aber keinen automatischen Standortwechsel.</p>
+        <label for="stallTempArea">Vorübergehender Stallbereich / Koppel</label>
+        <select id="stallTempArea" onchange="stallTempPlaces()"></select>
+        <label for="stallTempPlace">Stallplatz</label>
+        <select id="stallTempPlace"></select>
+        <label for="stallTempDue">Geplante Rückkehr (Datum und Uhrzeit)</label>
+        <input type="datetime-local" id="stallTempDue">
+        <button type="button" onclick="startStallTemporaryMove()">⏳ Zeitlich begrenzte Umstellung speichern</button>
+        <div id="stallTempMoves" aria-live="polite"></div>
+      </div>
+      <div class="stall-location-box stall-advanced hidden">
+        <h3>📜 Standortverlauf</h3>
+        <div id="stallLocationHistory">Wird geladen …</div>
+      </div>
+      <p class="stall-location-warning stall-advanced">⚠️ Rückkehrbestätigungen sind nur für tatsächlich erfolgte Rückführungen erlaubt. Die App verändert den Ist-Standort niemals allein aufgrund einer Uhrzeit.</p>
+    </div>
+    <div id="stallTabFeed" class="hidden">
+      <p>Futterplan nach Tageszeiten. Nur Administratoren können ihn bearbeiten. Mitarbeiter bestätigen die Fütterung für den heutigen Tag.</p>
+      <p id="stallFeedStatus" role="status"></p>
+      <div id="stallMealCards"></div>
+      <div class="stall-only-admin" id="stallFeedAdmin">
+        <label for="stallMealNotes">Allgemeine Fütterungshinweise (bestehender Text)</label>
+        <textarea id="stallMealNotes" maxlength="3000"></textarea>
+        <button type="button" onclick="saveStallCarePlan()">🌾 Futterplan speichern</button>
+      </div>
+    </div>
+    <div id="stallTabExtras" class="hidden">
+      <p>Pflegeanweisungen zum Lesen – keine Erledigt-Buttons.</p>
+      <p id="stallExtrasStatus" role="status"></p>
+      <div id="stallExtrasFields"></div>
+      <div class="stall-only-admin"><button type="button" onclick="saveStallCarePlan()">🧥 Extras speichern</button></div>
+    </div>
+    <div id="stallTabHealth" class="hidden">
+      <label for="stallHorseHealth">Gesundheitshinweise</label>
+      <textarea id="stallHorseHealth" maxlength="3000"></textarea>
+    </div>
+    <p id="stallFormMessage" role="status"></p>
+    <div class="stall-form-actions">
+      <button id="stallHorseSaveButton" onclick="saveStallHorse()">Speichern</button>
+      <button class="secondary" onclick="closeStallHorseForm()">Zurück zur Pferdeübersicht</button>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+
+  <div class="card hidden" id="adminPanel">
+  <h2>Administration</h2>
+  <h3>Mitglieder verwalten</h3>
+  <div id="membersList"></div>
+
+  <h3>Alle Buchungen verwalten</h3>
+  <div id="adminBookings"></div>
+</div>
+    
+    
+  
+
+
+
+</section>
+
+</main>
+
+<script>
+
+// SUPABASE VERBINDUNG
+
+const SUPABASE_URL =
+'https://euvwgvtanborprkrtrct.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_-NueqNFJb7kuCIaWjCo3Sw_SVugvyv_';
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let user = null;
+let member = null;
+let bookings = [];
+let facilities = [];
+let currentDate = new Date();
+let view = 'month';
+let stallHorses = [];
+let stallView = 'grid';
+let stallOpenGroups = new Set();
+let stallOpenHorses = new Set();
+let stallOpenBoxes = new Set();
+let stallCardData = {plans:new Map(),logs:new Map(),schedules:new Map(),areas:new Map(),places:new Map()};
+// V12: Der Ganzjahresplan hat Vorrang; Sommer/Winter bleiben als mögliche spätere Ergänzung erhalten.
+function stallSeasonLabel(season){return ({year_round:"Ganzjährig",summer:"Sommer",winter:"Winter"})[season]||season||"Plan";}
+function stallOrderedSchedules(rows){return [...(rows||[])].sort((a,b)=>({year_round:0,summer:1,winter:2}[a.season]??3)-({year_round:0,summer:1,winter:2}[b.season]??3));}
+function stallPlanText(row,label){const d=(row.day_starts_at||"08:00").slice(0,5);const n=(row.night_starts_at||"18:00").slice(0,5);return stallSeasonLabel(row.season)+": ☀️ ab "+d+" "+label(row.day_area_id,row.day_place_id)+" · 🌙 ab "+n+" "+label(row.night_area_id,row.night_place_id);}
+let editingStallHorseId = null;
+let stallContacts = [];
+let stallMemberOptions = [];
+let editingStallContactLinkId = null;
+let editingStallContactId = null;
+let stallIsStaff=false;
+let stallAreas=[];
+let stallPlaces=[];
+let stallCurrentLocation=null;
+let stallSeasonSchedules=[];
+let stallSeasonOptions=[];
+let stallLocationRequest=0;
+let stallCarePlan=null;
+let stallMealLogs=[];
+let stallCareRequest=0;
+const stallMealNames={morning:'🌅 Morgens',noon:'☀️ Mittags',evening:'🌙 Abends'};
+const stallMealStatuses={done:'🟢 Vollständig gefüttert',partial:'🟡 Teilweise gefüttert',missed:'🔴 Nicht gefüttert'};
+function stallToday(){const d=new Date();return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}
+
+
+
+// ZEITEN
+
+const hourSelect =
+document.getElementById('bookingHour');
+
+for(let h=7;h<=20;h++){
+  let option=document.createElement('option');
+  option.value=h;
+  option.textContent=
+    String(h).padStart(2,'0')+':00 Uhr';
+  hourSelect.appendChild(option);
+}
+
+// LOGIN
+
+async function login(){
+
+  const email=
+    document.getElementById('email').value;
+
+  const password=
+    document.getElementById('password').value;
+
+  const {data,error}=
+    await db.auth.signInWithPassword({
+      email,password
+    });
+
+  if(error){
+    showMessage(error.message);
+    return;
+  }
+
+  await startApp(data.user);
+}
+
+// REGISTRIERUNG
+
+async function register(){
+const usernameField = document.getElementById('username');
+
+usernameField.style.display = 'block';
+
+const username = usernameField.value.trim();
+
+if (!/^[A-Za-z0-9_-]{3,30}$/.test(username)) {
+  showMessage('Bitte einen Benutzernamen mit 3–30 Zeichen eingeben.');
+  usernameField.focus();
+  return;
+}
+
+  const email=
+    document.getElementById('email').value;
+
+  const password=
+    document.getElementById('password').value;
+
+  if(!email || !password){
+    showMessage('Bitte E-Mail und Passwort eingeben.');
+    return;
+  }
+
+  const {error}=await db.auth.signUp({
+  email,
+  password,
+  options: {
+    data: {
+      username: username
+    }
+  }
+});
+
+  if(error){
+    showMessage(error.message);
+  }else{
+    showMessage(
+      'Registrierung angelegt. Bitte E-Mail bestätigen. Danach muss dein Mitgliedskonto freigeschaltet werden.'
+    );
+  }
+}
+
+function showMessage(message){
+  document.getElementById('loginMessage')
+    .textContent=message;
+}
+
+// APP STARTEN
+
+async function startApp(authUser){
+
+  user=authUser;
+
+  document.getElementById('login')
+    .classList.add('hidden');
+
+  document.getElementById('app')
+    .classList.remove('hidden');
+
+  const {data,error}=await db
+    .from('members')
+    .select('*')
+    .eq('id',user.id)
+    .single();
+
+  if(error || !data){
+    document.getElementById('memberStatus')
+      .textContent=
+      'Mitgliedskonto noch nicht eingerichtet. Bitte den Administrator kontaktieren.';
+    return;
+  }
+
+  member=data;
+
+  document.getElementById('welcome')
+    .textContent='Willkommen, '+member.full_name;
+
+  const active=member.active && member.approved;
+document.getElementById('calendarCard').classList.toggle('hidden', !active);
+  document.getElementById('memberStatus')
+    .textContent=active
+      ? 'Mitgliedskonto aktiv ✓'
+      : 'Dein Zugang wartet auf Freischaltung.';
+document.getElementById('bookingCard').classList.toggle('hidden', !active);
+document.getElementById('myBookingsCard').classList.toggle('hidden', !active);
+  if(active && member.role!=='admin'){
+    const roleCheck=await db.rpc('stall_is_staff');
+    stallIsStaff=!roleCheck.error && roleCheck.data===true;
+    if(roleCheck.error) console.warn('Mitarbeiterrolle nicht prüfbar:',roleCheck.error.message);
+    if(stallIsStaff){
+      document.querySelectorAll('#stallCard .stall-toolbar button').forEach(btn=>{if(btn.getAttribute('onclick')==='openStallHorseForm()')btn.classList.add('hidden');});
+      document.getElementById('stallCard').classList.remove('hidden');
+      loadStallHorses();
+    }
+  }
+  if(member.role==='admin'){
+    document.getElementById('adminPanel')
+      .classList.remove('hidden');
+
+    loadMembers();
+    loadAdminBookings();
+    document.getElementById('stallCard').classList.toggle('hidden', !active);
+    if(active) loadStallHorses();
+  }
+
+  if(!active){
+    document.getElementById('bookingCard')
+      .classList.add('hidden');
+  }
+
+  await loadFacilities();
+  await loadBookings();
+  await loadMyBookings();
+}
+
+// STALLMANAGEMENT – lesende Admin-Ansicht
+async function loadStallHorses(){
+  if(!stallCanView()) return;
+  const message=document.getElementById('stallMessage');
+  message.textContent='Pferde werden geladen …';
+  const [horsesResult, locationsResult, areasResult, placesResult, contactsResult, linksResult] = await Promise.all([
+    db.from('stall_horses').select('id,name,color,photo_url,active,special_notes,feeding_notes,health_notes,home_area_id,home_position,home_box_label').order('name'),
+    db.from('stall_horse_locations').select('horse_id,area_id,place_id'),
+    db.from('stall_areas').select('id,name'),
+    db.from('stall_places').select('id,name'),
+    stallAdminAllowed()?db.from('stall_contacts').select('id,full_name'):Promise.resolve({data:[]}),
+    stallAdminAllowed()?db.from('stall_horse_contacts').select('horse_id,contact_id,role'):Promise.resolve({data:[]})
+  ]);
+  const failed=[horsesResult,locationsResult,areasResult,placesResult,contactsResult,linksResult].find(r=>r.error);
+  if(failed){
+    message.textContent='Pferdeübersicht konnte nicht geladen werden: '+failed.error.message+((failed.error.message.includes('home_position')||failed.error.message.includes('home_box_label'))?' Bitte zuerst das SQL-Skript für die feste Stallreihenfolge ausführen.':'');
+    return;
+  }
+  const areas=new Map((areasResult.data||[]).map(a=>[a.id,a.name]));
+  const places=new Map((placesResult.data||[]).map(p=>[p.id,p.name]));
+  const locations=new Map((locationsResult.data||[]).map(l=>[l.horse_id,l]));
+  const contactNames=new Map((contactsResult.data||[]).map(c=>[c.id,c.full_name]));
+  const horseOwners=new Map();
+  (linksResult.data||[]).filter(x=>x.role==='owner').forEach(x=>{
+    if(!horseOwners.has(x.horse_id)) horseOwners.set(x.horse_id,[]);
+    const name=contactNames.get(x.contact_id);
+    if(name && !horseOwners.get(x.horse_id).includes(name)) horseOwners.get(x.horse_id).push(name);
+  });
+  stallHorses=(horsesResult.data||[]).filter(h=>h.active!==false).map(h=>{
+    const l=locations.get(h.id);
+    return {...h,owners:(horseOwners.get(h.id)||[]).join(', '),location:l ? [areas.get(l.area_id), l.place_id ? places.get(l.place_id) : null].filter(Boolean).join(' – ') : 'Noch kein Standort erfasst'};
+  });
+  message.textContent=stallHorses.length+' Pferd(e) geladen. Aktuell = dokumentierter Ist-Standort; der Ganzjahresplan beschreibt nur die geplanten Aufenthaltsorte.';
+  renderStallHorses();
+  await loadStallCardData();
+  // Keine komplexen Rückkehrwarnungen in der vereinfachten Mitarbeiterübersicht.
+}
+function setStallView(next){
+  stallView=next;
+  renderStallHorses();
+}
+// V8: Informationen für ALLE Pferde in vier statt vielen Einzelabfragen laden.
+async function loadStallCardData(){
+  if(!stallCanView())return;
+  const msg=document.getElementById('stallMessage');
+  const [plans,logs,schedules,areas,places]=await Promise.all([
+    db.from('stall_care_plans').select('horse_id,feed_morning,feed_noon,feed_evening,feed_notes,extra_morning,extra_noon,extra_evening,extra_notes'),
+    Promise.resolve({data:[],error:null}),
+    db.from('stall_horse_schedules').select('horse_id,season,day_area_id,day_place_id,night_area_id,night_place_id,day_starts_at,night_starts_at'),
+    db.from('stall_areas').select('id,name'),
+    db.from('stall_places').select('id,name')
+  ]);
+  const failures=[plans,logs,schedules,areas,places].filter(r=>r.error);
+  if(failures.length){
+    msg.textContent+=' ⚠️ Ergänzende Daten nicht vollständig verfügbar: '+failures.map(r=>r.error.message).join(' / ');
+  }
+  const group=(rows,key)=>{const map=new Map();(rows||[]).forEach(row=>{if(!map.has(row[key]))map.set(row[key],[]);map.get(row[key]).push(row)});return map};
+  stallCardData={
+    plans:new Map((plans.data||[]).map(x=>[x.horse_id,x])),
+    logs:group(logs.data,'horse_id'),
+    schedules:group(schedules.data,'horse_id'),
+    areas:new Map((areas.data||[]).map(x=>[x.id,x.name])),
+    places:new Map((places.data||[]).map(x=>[x.id,x.name]))
+  };
+  renderStallHorses();
+}
+function stallCardText(parent,text,cls=''){
+  const p=document.createElement('p');if(cls)p.className=cls;p.textContent=text;parent.appendChild(p);return p;
+}
+function stallCardSection(card,title){
+  const section=document.createElement('section');section.className='stall-card-section';
+  const heading=document.createElement('strong');heading.textContent=title;section.appendChild(heading);card.appendChild(section);return section;
+}
+function stallCardLocationName(area,place){
+  return [stallCardData.areas.get(area),stallCardData.places.get(place)].filter(Boolean).join(' – ')||'Nicht festgelegt';
+}
+// V9: Kein Pferd wechselt die Gruppe durch eine bloße Standortänderung.
+function stallToggleAllGroups(open){
+  if(open){stallOpenGroups=new Set(stallHorses.map(h=>h.home_area_id||'unassigned'));}
+  else {stallOpenGroups.clear();stallOpenHorses.clear();stallOpenBoxes.clear();}
+  renderStallHorses();
+}
+function stallElem(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+async function stallSaveHomeArea(horseId,select,button){
+  if(!stallAdminAllowed())return;
+  button.disabled=true;
+  try{
+    const {error}=await db.from('stall_horses').update({home_area_id:select.value||null}).eq('id',horseId);
+    if(error)throw error;
+    const horse=stallHorses.find(h=>h.id===horseId);
+    if(horse)horse.home_area_id=select.value||null;
+    stallOpenGroups.add(select.value||'unassigned');
+    renderStallHorses();
+    document.getElementById('stallMessage').textContent='Stammbereich gespeichert.';
+  }catch(err){alert('Stammbereich nicht gespeichert: '+err.message);button.disabled=false;}
+}
+function renderStallHorses(){
+  const container=document.getElementById('stallHorses');
+  const query=document.getElementById('stallSearch').value.trim().toLocaleLowerCase('de-DE');
+  container.className='stall-folding-list';container.replaceChildren();
+  const areaName=id=>stallCardData.areas.get(id)||'Unbekannter Stammbereich';
+  const match=stallHorses.filter(h=>[h.name,h.location,h.owners,areaName(h.home_area_id)].some(x=>(x||'').toLocaleLowerCase('de-DE').includes(query)));
+  if(!match.length){stallCardText(container,stallHorses.length?'Keine passenden Pferde gefunden.':'Noch keine Pferde angelegt.','stall-empty');return;}
+  const groups=new Map();
+  match.forEach(h=>{const key=h.home_area_id||'unassigned';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(h);});
+  const ordered=[...groups.entries()].sort((a,b)=>{
+    if(a[0]==='unassigned')return 1;if(b[0]==='unassigned')return -1;
+    return areaName(a[0]).localeCompare(areaName(b[0]),'de');
+  });
+  for(const [key,horses] of ordered){
+    const group=document.createElement('details');group.className='stall-folding-group';
+    group.open=!!query||stallOpenGroups.has(key);
+    group.addEventListener('toggle',()=>{if(group.open)stallOpenGroups.add(key);else stallOpenGroups.delete(key);});
+    const label=key==='unassigned'?'📁 Stammbereich noch nicht zugeordnet':'📍 '+areaName(key);
+    group.appendChild(stallElem('summary','stall-folding-group-title',label+' · '+horses.length+' Pferd'+(horses.length===1?'':'e')));
+    const groupBody=stallElem('div','stall-folding-group-body');
+    // V11: räumliche Reihenfolge statt Alphabet; Pferde mit derselben Stamm-Box gruppieren.
+    const sortedHorses=[...horses].sort((a,b)=>{
+      const pa=Number.isInteger(a.home_position)?a.home_position:Number.MAX_SAFE_INTEGER;
+      const pb=Number.isInteger(b.home_position)?b.home_position:Number.MAX_SAFE_INTEGER;
+      return pa-pb || a.name.localeCompare(b.name,'de');
+    });
+    const boxGroups=new Map();
+    for(const horse of sortedHorses){
+      const boxLabel=(horse.home_box_label||'').trim();
+      // Ohne konkrete Boxennummer wird das Pferd einzeln an seiner Position gezeigt.
+      const boxKey=boxLabel ? 'box:'+boxLabel : 'horse:'+horse.id;
+      if(!boxGroups.has(boxKey))boxGroups.set(boxKey,{label:boxLabel,horses:[]});
+      boxGroups.get(boxKey).horses.push(horse);
+    }
+    for(const [boxKey,boxInfo] of boxGroups){
+      let target=groupBody;
+      if(boxInfo.label){
+        const box=document.createElement('details');box.className='stall-folding-box';
+        const openKey=key+':'+boxKey;
+        box.open=!!query||stallOpenBoxes.has(openKey);
+        box.addEventListener('toggle',()=>{if(box.open)stallOpenBoxes.add(openKey);else stallOpenBoxes.delete(openKey);});
+        box.appendChild(stallElem('summary','stall-folding-box-title',
+          '🏠 '+boxInfo.label+' – '+boxInfo.horses.map(h=>h.name).join(' & ')));
+        target=stallElem('div','stall-folding-box-body');
+        box.appendChild(target);
+        groupBody.appendChild(box);
+      }
+      for(const h of boxInfo.horses){
+      const item=document.createElement('details');item.className='stall-folding-horse';
+      item.open=!!query||stallOpenHorses.has(h.id);
+      item.addEventListener('toggle',()=>{if(item.open)stallOpenHorses.add(h.id);else stallOpenHorses.delete(h.id);});
+      item.appendChild(stallElem('summary','stall-folding-horse-title','🐴 '+h.name));
+      const content=stallElem('div','stall-folding-horse-body');
+      stallCardText(content,'📍 Ist-Standort: '+h.location);
+      const schedule=stallCardData.schedules.get(h.id)||[];
+      const sch=stallCardSection(content,'📅 Geplante Unterbringung · ☀️ Tag / 🌙 Nacht');
+      if(schedule.length){stallOrderedSchedules(schedule).forEach(x=>stallCardText(sch,stallPlanText(x,stallCardLocationName),'stall-card-plan'));}
+      else stallCardText(sch,'Noch kein Tages-/Nachtplan hinterlegt.','stall-card-plan');
+      const feed=stallCardSection(content,'🌾 Futterplan');feed.classList.add('stall-card-feed');
+      const plan=stallCardData.plans.get(h.id)||{};
+      const logs=stallCardData.logs.get(h.id)||[];
+      Object.entries(stallMealNames).forEach(([meal,label])=>{
+        const row=document.createElement('div');row.className='stall-card-feed-row';
+        const desc=document.createElement('div');desc.textContent=label+': '+(plan['feed_'+meal]||'Kein Futterplan hinterlegt');row.appendChild(desc);
+        // V10: Fütterungsbestätigungen vorerst ausgeschaltet – nur Futterplan anzeigen.
+        feed.appendChild(row);
+      });
+      if(plan.feed_notes||h.feeding_notes)stallCardText(feed,'ℹ️ '+(plan.feed_notes||h.feeding_notes));
+      const extras=stallCardSection(content,'🧥 Extras & Pflege');
+      [['🌅',plan.extra_morning],['☀️',plan.extra_noon],['🌙',plan.extra_evening],['⚠️',plan.extra_notes]].filter(x=>x[1]).forEach(x=>stallCardText(extras,x[0]+' '+x[1]));
+      if(!extras.querySelector('p'))stallCardText(extras,'Keine Extras hinterlegt.');
+      const hints=[h.special_notes,h.health_notes].filter(Boolean);
+      if(hints.length){const noteSection=stallCardSection(content,'⚠️ Wichtige Hinweise');hints.forEach(x=>stallCardText(noteSection,x,'stall-card-warning'));}
+      const actions=document.createElement('div');actions.className='stall-card-actions';
+      const loc=document.createElement('button');loc.className='secondary';loc.textContent='📍 Standort ändern';loc.onclick=()=>{openStallHorseForm(h.id);showStallHorseTab('location')};actions.appendChild(loc);
+      content.appendChild(actions);
+      if(stallAdminAllowed()){
+        const admin=stallCardSection(content,'👑 Verwaltung');
+        const label=stallElem('label','','Fester Stammbereich (unabhängig vom aktuellen Standort)');admin.appendChild(label);
+        const pick=document.createElement('select');pick.setAttribute('aria-label',h.name+' Stammbereich wählen');
+        const none=document.createElement('option');none.value='';none.textContent='Bitte Stammbereich auswählen';pick.appendChild(none);
+        [...stallCardData.areas.entries()].sort((x,y)=>x[1].localeCompare(y[1],'de')).forEach(([id,name])=>{const opt=document.createElement('option');opt.value=id;opt.textContent=name;pick.appendChild(opt)});
+        pick.value=h.home_area_id||'';admin.appendChild(pick);
+        const save=stallElem('button','secondary','Stammbereich speichern');save.onclick=()=>stallSaveHomeArea(h.id,pick,save);admin.appendChild(save);
+        const edit=stallElem('button','secondary','✏️ Pferdeakte bearbeiten');edit.onclick=()=>openStallHorseForm(h.id);admin.appendChild(edit);
+      }
+      item.appendChild(content);target.appendChild(item);
+      }
+    }
+    group.appendChild(groupBody);container.appendChild(group);
+  }
+}
+async function saveStallCardMeal(horseId,meal,select,note,button){
+  if(!stallCanView())return;
+  const status=select.value,comment=note.value.trim();
+  if(!status){alert('Bitte einen Fütterungsstatus auswählen.');return;}
+  if(status!=='done'&&!comment){alert('Bei teilweise oder nicht gefüttert eine Bemerkung eingeben.');return;}
+  button.disabled=true;button.textContent='Speichern …';
+  try{
+    const {data:{user:authUser},error:authError}=await db.auth.getUser();
+    if(authError||!authUser)throw new Error('Bitte erneut anmelden.');
+    const payload={horse_id:horseId,meal_date:stallToday(),meal,status,note:comment||null,recorded_by:authUser.id};
+    const {error}=await db.from('stall_feeding_logs').upsert(payload,{onConflict:'horse_id,meal_date,meal'});
+    if(error)throw error;
+    // Übersichtsstatus nach dem Speichern sofort erneuern.
+    await loadStallCardData();
+  }catch(error){alert('Fütterung nicht gespeichert: '+error.message);button.disabled=false;button.textContent='Bestätigen';}
+}
+
+// PFERDEAKTE – vorerst Stammdaten und Hinweise, nur Administratoren
+function stallCanView(){return !!(member && member.active && member.approved && (member.role==='admin'||stallIsStaff));}
+function stallAdminAllowed(){
+  return !!(member && member.active && member.approved && member.role==='admin');
+}
+function showStallHorseTab(tab){
+  const tabs={overview:'stallTabOverview',master:'stallTabMaster',owners:'stallTabOwners',location:'stallTabLocation',feed:'stallTabFeed',extras:'stallTabExtras',health:'stallTabHealth'};
+  Object.entries(tabs).forEach(([key,id])=>document.getElementById(id).classList.toggle('hidden',key!==tab));
+  if(tab==='owners' && editingStallHorseId && stallAdminAllowed()) loadStallContacts(editingStallHorseId);
+  if(tab==='location') loadStallLocation();
+  if(tab==='overview'){ loadStallOverview(); if(!stallAdminAllowed()) { loadStallLocation(); loadStallCare(); }}
+  if(tab==='feed'||tab==='extras') loadStallCare();
+}
+function openStallHorseForm(horseId=null){
+  if(!stallCanView()) return;
+  if(!stallAdminAllowed() && !horseId) return;
+  const horse=horseId ? stallHorses.find(h=>h.id===horseId) : null;
+  if(horseId && !horse){alert('Pferd nicht gefunden. Bitte aktualisieren.');return;}
+  editingStallHorseId=horse?.id || null;
+  document.getElementById('stallHorseFormTitle').textContent=horse?'🐴 Pferdeakte: '+horse.name:'🐴 Pferd hinzufügen';
+  document.getElementById('stallHorseName').value=horse?.name||'';
+  document.getElementById('stallHorseColor').value=horse?.color||'';
+  document.getElementById('stallHorseNotes').value=horse?.special_notes||'';
+  document.getElementById('stallMealNotes').value=horse?.feeding_notes||'';
+  document.getElementById('stallHorseHealth').value=horse?.health_notes||'';
+  document.getElementById('stallFormMessage').textContent='';
+  document.querySelectorAll('#stallHorseFormCard .stall-tabs button').forEach(btn=>{
+    const call=btn.getAttribute('onclick')||'';
+    const staffTab=["'overview'","'location'","'feed'","'extras'"].some(x=>call.includes(x));
+    btn.classList.toggle('hidden', !stallAdminAllowed() && !staffTab);
+  });
+  document.querySelectorAll('.stall-advanced').forEach(el=>el.classList.add('hidden'));
+  document.getElementById('stallHorseSaveButton').classList.toggle('hidden',!stallAdminAllowed());
+  document.getElementById('stallScheduleBox').classList.toggle('hidden',!stallAdminAllowed());
+  // Kompakte Mitarbeiteransicht: alle operativen Bedienelemente an einem Ort,
+  // ohne weitere Reiter, ohne neue Datenbankfunktionen.
+  const compact=!stallAdminAllowed() && !!horse?.id;
+  document.getElementById('stallHorseFormCard').classList.toggle('stall-compact',compact);
+  const locationBox=document.getElementById('stallCurrentLocationBox');
+  const locationHome=document.getElementById('stallTabLocation');
+  const inlineLocation=document.getElementById('ovInlineLocation');
+  const mealCards=document.getElementById('stallMealCards');
+  const inlineFeed=document.getElementById('ovInlineFeed');
+  const feedHome=document.getElementById('stallTabFeed');
+  const feedStatus=document.getElementById('stallFeedStatus');
+  const locStatus=document.getElementById('stallLocationStatus');
+  if(compact){
+    inlineLocation.append(locStatus,locationBox);
+    inlineFeed.append(feedStatus,mealCards);
+  }else{
+    locationHome.insertBefore(locStatus,document.getElementById('stallScheduleBox'));
+    locationHome.insertBefore(locationBox,document.getElementById('stallScheduleBox'));
+    feedHome.insertBefore(feedStatus,document.getElementById('stallFeedAdmin'));
+    feedHome.insertBefore(mealCards,document.getElementById('stallFeedAdmin'));
+  }
+  document.querySelectorAll('.stall-admin-overview').forEach(el=>el.classList.toggle('hidden',compact));
+  showStallHorseTab(horse?.id?'overview':'master');
+  closeStallContactEditor();
+  if(stallAdminAllowed()){
+    if(horse?.id) loadStallContacts(horse.id);
+    else {stallContacts=[];renderStallContacts();}
+  }
+  document.getElementById('stallCard').classList.add('hidden');
+  document.getElementById('stallHorseFormCard').classList.remove('hidden');
+  document.getElementById('stallHorseFormCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeStallHorseForm(){
+  closeStallContactEditor();
+  stallCareRequest++;
+  document.getElementById('stallHorseFormCard').classList.add('hidden');
+  document.getElementById('stallCard').classList.remove('hidden');
+  document.getElementById('stallCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function saveStallHorse(){
+  if(!stallAdminAllowed()) return;
+  const name=document.getElementById('stallHorseName').value.trim();
+  const status=document.getElementById('stallFormMessage');
+  if(!name){showStallHorseTab('master');status.textContent='Bitte einen Pferdenamen eingeben.';return;}
+  const payload={name,color:document.getElementById('stallHorseColor').value.trim()||null,
+    special_notes:document.getElementById('stallHorseNotes').value.trim()||null,
+    feeding_notes:document.getElementById('stallMealNotes').value.trim()||null,
+    health_notes:document.getElementById('stallHorseHealth').value.trim()||null};
+  const saveButton=document.getElementById('stallHorseSaveButton');
+  saveButton.disabled=true;
+  status.textContent='Speichern …';
+  try{
+    const result=editingStallHorseId
+      ? await db.from('stall_horses').update(payload).eq('id',editingStallHorseId).select('id')
+      : await db.from('stall_horses').insert(payload).select('id');
+    if(result.error) throw result.error;
+    if(!result.data?.length) throw new Error('Keine Änderung bestätigt. Bitte Berechtigungen prüfen.');
+    await loadStallHorses();
+    closeStallHorseForm();
+    document.getElementById('stallMessage').textContent='Pferd erfolgreich gespeichert.';
+  }catch(error){status.textContent='Speichern fehlgeschlagen: '+error.message;}
+  finally{saveButton.disabled=false;}
+}
+
+
+// VERSION 6 – EINFACHE MITARBEITERANSICHT UND FÜTTERUNGSBESTÄTIGUNG
+function careStatus(id,message){document.getElementById(id).textContent=message||'';}
+async function loadStallCare(){
+  const id=editingStallHorseId, req=++stallCareRequest;
+  if(!id){careStatus('stallFeedStatus','Bitte zuerst Pferd speichern.');return;}
+  const [planResult,logResult]=await Promise.all([
+    db.from('stall_care_plans').select('*').eq('horse_id',id).maybeSingle(),
+    Promise.resolve({data:[],error:null})
+  ]);
+  if(req!==stallCareRequest || id!==editingStallHorseId)return;
+  const error=planResult.error||logResult.error;
+  if(error){careStatus('stallFeedStatus','Fütterungsdaten konnten nicht geladen werden: '+error.message+' (V6-SQL bereits ausgeführt?)');careStatus('stallExtrasStatus','Daten konnten nicht geladen werden: '+error.message);return;}
+  stallCarePlan=planResult.data||{};
+  stallMealLogs=logResult.data||[];
+  renderStallCare();
+  careStatus('stallFeedStatus','');careStatus('stallExtrasStatus','');
+}
+function renderStallCare(){
+  const plan=stallCarePlan||{};
+  const feed=document.getElementById('stallMealCards');feed.replaceChildren();
+  Object.entries(stallMealNames).forEach(([key,label])=>{
+    const box=document.createElement('div');box.className='stall-meal';
+    const title=document.createElement('h3');title.textContent=label;box.appendChild(title);
+    const labelEl=document.createElement('label');labelEl.textContent='Futtermittel, Menge und Besonderheiten';box.appendChild(labelEl);
+    if(stallAdminAllowed()){
+      const field=document.createElement('textarea');field.id='meal_'+key;field.maxLength=2000;field.value=plan['feed_'+key]||'';field.placeholder='z. B. 1 kg Futter A';box.appendChild(field);
+    }else{
+      const detail=document.createElement('p');detail.className='compact-feed-line';detail.textContent=plan['feed_'+key]||'Kein Futterplan hinterlegt';box.appendChild(detail);
+    }
+    // V10: Keine Fütterungsstatus-Buttons oder Tagesstatus anzeigen.
+    feed.appendChild(box);
+  });
+  document.getElementById('stallFeedAdmin').classList.toggle('hidden',!stallAdminAllowed());
+  document.getElementById('stallMealNotes').value=plan.feed_notes||stallHorses.find(x=>x.id===editingStallHorseId)?.feeding_notes||'';
+  const extra=document.getElementById('stallExtrasFields');extra.replaceChildren();
+  [['extra_morning','🌅 Morgens'],['extra_noon','☀️ Mittags'],['extra_evening','🌙 Abends'],['extra_notes','Weitere Hinweise / Wetterregeln']].forEach(([key,label])=>{
+    const l=document.createElement('label');l.textContent=label;extra.appendChild(l);
+    const field=document.createElement('textarea');field.id=key;field.maxLength=2000;field.value=plan[key]||'';field.readOnly=!stallAdminAllowed();field.placeholder=stallAdminAllowed()?'Anweisung eingeben':'Keine Angaben';extra.appendChild(field);
+  });
+  document.querySelector('#stallTabExtras .stall-only-admin').classList.toggle('hidden',!stallAdminAllowed());
+}
+async function saveStallCarePlan(){
+  if(!stallAdminAllowed()||!editingStallHorseId)return;
+  const payload={horse_id:editingStallHorseId,feed_notes:document.getElementById('stallMealNotes').value.trim()};
+  for(const k of ['morning','noon','evening'])payload['feed_'+k]=document.getElementById('meal_'+k).value.trim();
+  for(const k of ['extra_morning','extra_noon','extra_evening','extra_notes'])payload[k]=document.getElementById(k).value.trim();
+  const {error}=await db.from('stall_care_plans').upsert(payload,{onConflict:'horse_id'});
+  if(error){careStatus('stallFeedStatus','Speichern fehlgeschlagen: '+error.message);careStatus('stallExtrasStatus','Speichern fehlgeschlagen: '+error.message);return;}
+  careStatus('stallFeedStatus','✅ Futterplan gespeichert.');careStatus('stallExtrasStatus','✅ Extras gespeichert.');
+  await loadStallCare();
+}
+async function saveStallMeal(meal){
+  if(!stallCanView()||!editingStallHorseId||!['morning','noon','evening'].includes(meal))return;
+  const status=document.getElementById('meal_status_'+meal).value;
+  const note=document.getElementById('meal_note_'+meal).value.trim();
+  if(!status){careStatus('stallFeedStatus','Bitte einen Fütterungsstatus auswählen.');return;}
+  if(status!=='done'&&!note){careStatus('stallFeedStatus','Bei teilweise oder nicht gefüttert bitte eine Bemerkung eintragen.');return;}
+  careStatus('stallFeedStatus','Fütterung wird gespeichert …');
+  const {data:{user:authUser},error:authError}=await db.auth.getUser();
+  if(authError||!authUser){careStatus('stallFeedStatus','Bitte erneut anmelden.');return;}
+  const payload={horse_id:editingStallHorseId,meal_date:stallToday(),meal,status,note:note||null,recorded_by:authUser.id};
+  const {error}=await db.from('stall_feeding_logs').upsert(payload,{onConflict:'horse_id,meal_date,meal'});
+  if(error){careStatus('stallFeedStatus','Speichern fehlgeschlagen: '+error.message);return;}
+  await loadStallCare();if(!stallAdminAllowed())await loadStallOverview();careStatus('stallFeedStatus','✅ Fütterungsstatus gespeichert.');
+}
+async function loadStallOverview(){
+  const id=editingStallHorseId;if(!id){careStatus('stallOverviewStatus','Bitte zuerst Pferd speichern.');return;}
+  const horse=stallHorses.find(x=>x.id===id);
+  document.getElementById('ovCurrent').textContent=horse?.location||'Noch kein Standort erfasst';
+  document.getElementById('ovWarnings').textContent=[horse?.special_notes,horse?.health_notes].filter(Boolean).join('\n')||'Keine Angaben';
+  const [plans,logs,schedules,seasons,areas,places]=await Promise.all([
+    db.from('stall_care_plans').select('*').eq('horse_id',id).maybeSingle(),
+    Promise.resolve({data:[],error:null}),
+    db.from('stall_horse_schedules').select('season,day_area_id,day_place_id,night_area_id,night_place_id,day_starts_at,night_starts_at').eq('horse_id',id),
+    db.from('stall_seasons').select('name'),
+    db.from('stall_areas').select('id,name'),
+    db.from('stall_places').select('id,name')
+  ]);
+  const err=[plans,logs,schedules,seasons,areas,places].find(x=>x.error);
+  if(err){careStatus('stallOverviewStatus','Übersicht unvollständig: '+err.error.message+' (V6-SQL / Leserechte prüfen)');return;}
+  careStatus('stallOverviewStatus','');
+  const p=plans.data||{};const mealLogs=logs.data||[];
+  document.getElementById('ovExtras').textContent=[['🌅 Morgens',p.extra_morning],['☀️ Mittags',p.extra_noon],['🌙 Abends',p.extra_evening],['⚠️ Hinweise',p.extra_notes]].filter(x=>x[1]).map(x=>x[0]+': '+x[1]).join('\n')||'Keine Extras hinterlegt';
+  const meals=document.getElementById('ovMeals');meals.replaceChildren();meals.classList.toggle('hidden',!stallAdminAllowed());
+  if(p.feed_notes||horse?.feeding_notes){const note=document.createElement('p');note.textContent='ℹ️ '+(p.feed_notes||horse?.feeding_notes);meals.appendChild(note);}
+  Object.entries(stallMealNames).forEach(([key,label])=>{const row=document.createElement('p');row.textContent=label+': '+(p['feed_'+key]||'Kein Plan hinterlegt');meals.appendChild(row);});
+  const amap=new Map((areas.data||[]).map(x=>[x.id,x.name]));const pmap=new Map((places.data||[]).map(x=>[x.id,x.name]));
+  const scheduleList=schedules.data||[];
+  const label=(a,pl)=>[amap.get(a),pmap.get(pl)].filter(Boolean).join(' – ')||'Nicht festgelegt';
+  document.getElementById('ovPlan').textContent=scheduleList.length?stallOrderedSchedules(scheduleList).map(s=>stallPlanText(s,label)).join('\n'):'Noch kein Tages-/Nachtplan hinterlegt.';
+}
+
+// VERSION 3 – KONTAKTE (ADMIN ONLY; RLS wird zusätzlich von Supabase erzwungen)
+function stallContactStatus(message){document.getElementById('stallContactMessage').textContent=message||'';}
+function stallContactSourceChanged(){
+  const external=document.getElementById('stallContactSource').value==='external';
+  document.getElementById('stallContactMemberFields').classList.toggle('hidden',external);
+  document.getElementById('stallContactNameFields').classList.toggle('hidden',!external);
+}
+function closeStallContactEditor(){
+  editingStallContactLinkId=null; editingStallContactId=null;
+  document.getElementById('stallContactEditor').classList.add('hidden');
+}
+async function loadStallContactMembers(){
+  const {data,error}=await db.from('members').select('id,full_name,active,approved').order('full_name');
+  if(error) throw error;
+  stallMemberOptions=data||[];
+  const select=document.getElementById('stallContactMember');select.replaceChildren();
+  const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Bitte Mitglied auswählen';select.appendChild(placeholder);
+  stallMemberOptions.forEach(m=>{const opt=document.createElement('option');opt.value=m.id;opt.textContent=m.full_name+(!m.active||!m.approved?' (nicht aktiv)':'');select.appendChild(opt);});
+}
+async function loadStallContacts(horseId){
+  if(!stallAdminAllowed() || !horseId) return;
+  stallContactStatus('Kontakte werden geladen …');
+  const [links,contacts]=await Promise.all([
+    db.from('stall_horse_contacts').select('id,horse_id,contact_id,role,emergency_priority').eq('horse_id',horseId),
+    db.from('stall_contacts').select('id,full_name,phone,email,member_id')
+  ]);
+  if(links.error||contacts.error){stallContactStatus('Kontakte konnten nicht geladen werden: '+(links.error||contacts.error).message);return;}
+  const map=new Map((contacts.data||[]).map(c=>[c.id,c]));
+  stallContacts=(links.data||[]).map(l=>({...l,contact:map.get(l.contact_id)})).filter(l=>l.contact);
+  stallContactStatus('');renderStallContacts();
+}
+function renderStallContacts(){
+  const list=document.getElementById('stallContactsList');list.replaceChildren();
+  const add=document.getElementById('stallAddContactButton');
+  add.disabled=!editingStallHorseId;
+  if(!editingStallHorseId){const p=document.createElement('p');p.className='stall-empty';p.textContent='Bitte zuerst die Stammdaten des neuen Pferdes speichern. Danach kannst du Kontakte zuordnen.';list.appendChild(p);return;}
+  if(!stallContacts.length){const p=document.createElement('p');p.className='stall-empty';p.textContent='Noch keine Kontakte zugeordnet.';list.appendChild(p);return;}
+  const labels={owner:'Besitzer/in',riding_share:'Reitbeteiligung',emergency:'Weitere Notfallperson'};
+  const sorted=[...stallContacts].sort((a,b)=>(a.emergency_priority||9999)-(b.emergency_priority||9999));
+  sorted.forEach(link=>{
+    const card=document.createElement('div');card.className='stall-contact';
+    const title=document.createElement('strong');title.textContent=link.contact.full_name;card.appendChild(title);
+    const role=document.createElement('p');role.className='small';role.textContent=labels[link.role]||link.role;
+    if(link.emergency_priority) role.textContent+=' · 🚨 Notfallkontakt Nr. '+link.emergency_priority;
+    card.appendChild(role);
+    if(link.contact.phone){const p=document.createElement('p');const a=document.createElement('a');a.href='tel:'+link.contact.phone.replace(/[^+\d]/g,'');a.textContent='📞 '+link.contact.phone;p.appendChild(a);card.appendChild(p);}
+    if(link.contact.email){const p=document.createElement('p');const a=document.createElement('a');a.href='mailto:'+link.contact.email;a.textContent='✉️ '+link.contact.email;p.appendChild(a);card.appendChild(p);}
+    const actions=document.createElement('div');actions.className='stall-contact-actions';
+    const edit=document.createElement('button');edit.className='secondary';edit.textContent='Bearbeiten';edit.onclick=()=>openStallContactEditor(link.id);actions.appendChild(edit);
+    const del=document.createElement('button');del.className='danger';del.textContent='Zuordnung entfernen';del.onclick=()=>removeStallContactLink(link.id);actions.appendChild(del);
+    card.appendChild(actions);list.appendChild(card);
+  });
+}
+async function openStallContactEditor(linkId=null){
+  if(!stallAdminAllowed() || !editingStallHorseId) return;
+  stallContactStatus('');
+  const editor=document.getElementById('stallContactEditor');
+  editingStallContactLinkId=linkId;editingStallContactId=null;
+  document.getElementById('stallContactEditorTitle').textContent=linkId?'Kontakt bearbeiten':'Kontakt zuordnen';
+  document.getElementById('stallContactSource').value='member';
+  document.getElementById('stallContactName').value='';
+  document.getElementById('stallContactPhone').value='';
+  document.getElementById('stallContactEmail').value='';
+  document.getElementById('stallContactRole').value='owner';
+  document.getElementById('stallContactEmergency').checked=false;
+  document.getElementById('stallContactPriority').value='';
+  try{await loadStallContactMembers();}
+  catch(error){stallContactStatus('Mitglieder konnten nicht geladen werden: '+error.message);return;}
+  if(linkId){
+    const link=stallContacts.find(l=>l.id===linkId);
+    if(!link){stallContactStatus('Zuordnung nicht gefunden.');return;}
+    editingStallContactId=link.contact_id;
+    document.getElementById('stallContactSource').value=link.contact.member_id?'member':'external';
+    document.getElementById('stallContactMember').value=link.contact.member_id||'';
+    document.getElementById('stallContactName').value=link.contact.full_name;
+    document.getElementById('stallContactPhone').value=link.contact.phone||'';
+    document.getElementById('stallContactEmail').value=link.contact.email||'';
+    document.getElementById('stallContactRole').value=link.role;
+    document.getElementById('stallContactEmergency').checked=!!link.emergency_priority;
+    document.getElementById('stallContactPriority').value=link.emergency_priority||'';
+    // Verknüpfte Kontaktdaten dürfen nicht unbemerkt für andere Pferde geändert werden.
+    document.getElementById('stallContactSource').disabled=true;
+    document.getElementById('stallContactMember').disabled=true;
+  }else{
+    document.getElementById('stallContactSource').disabled=false;
+    document.getElementById('stallContactMember').disabled=false;
+  }
+  stallContactSourceChanged();editor.classList.remove('hidden');editor.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+async function saveStallContact(){
+  if(!stallAdminAllowed()||!editingStallHorseId) return;
+  const button=document.getElementById('stallContactSaveButton');
+  const source=document.getElementById('stallContactSource').value;
+  const memberId=source==='member'?document.getElementById('stallContactMember').value:null;
+  const selectedMember=stallMemberOptions.find(m=>m.id===memberId);
+  const name=source==='member'?(selectedMember?.full_name||''):document.getElementById('stallContactName').value.trim();
+  const phone=document.getElementById('stallContactPhone').value.trim()||null;
+  const email=document.getElementById('stallContactEmail').value.trim()||null;
+  const role=document.getElementById('stallContactRole').value;
+  const emergency=document.getElementById('stallContactEmergency').checked||role==='emergency';
+  const rawPriority=document.getElementById('stallContactPriority').value.trim();
+  const priority=emergency?Number(rawPriority):null;
+  if(!name){stallContactStatus('Bitte eine Person auswählen oder einen Namen eintragen.');return;}
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){stallContactStatus('Bitte eine gültige E-Mail-Adresse eingeben.');return;}
+  if(emergency && (!rawPriority || !Number.isInteger(priority)||priority<1||priority>999)){stallContactStatus('Für Notfallkontakte eine Reihenfolge zwischen 1 und 999 eingeben.');return;}
+  if(priority && stallContacts.some(l=>l.id!==editingStallContactLinkId&&l.emergency_priority===priority)){stallContactStatus('Diese Notfall-Priorität ist bei diesem Pferd bereits vergeben.');return;}
+  button.disabled=true;stallContactStatus('Kontakt wird gespeichert …');
+  try{
+    let contactId=editingStallContactId;
+    if(contactId){
+      // Nur Daten eines Kontakts ändern, wenn nicht mit anderen Pferden verknüpft.
+      const {data:otherLinks,error:checkError}=await db.from('stall_horse_contacts').select('id,horse_id').eq('contact_id',contactId);
+      if(checkError) throw checkError;
+      if((otherLinks||[]).some(l=>l.horse_id!==editingStallHorseId)){
+        throw new Error('Dieser Kontakt ist auch anderen Pferden zugeordnet. Bitte Kontaktdaten nicht hier bearbeiten; lege stattdessen einen neuen Kontakt an.');
+      }
+      const {error}=await db.from('stall_contacts').update({full_name:name,phone,email}).eq('id',contactId);
+      if(error) throw error;
+    }else{
+      // Vorhandene Mitgliedskontakte wiederverwenden; externe Personen erhalten eigene Datensätze.
+      if(memberId){
+        const {data:existing,error:lookupError}=await db.from('stall_contacts').select('id').eq('member_id',memberId).limit(1);
+        if(lookupError) throw lookupError;
+        if(existing?.length){
+          contactId=existing[0].id;
+          // Vorhandene Stammdaten nicht überschreiben; nur Zuordnung speichern.
+        }
+      }
+      if(!contactId){
+        const {data,error}=await db.from('stall_contacts').insert({full_name:name,phone,email,member_id:memberId||null}).select('id').single();
+        if(error) throw error;contactId=data.id;
+      }
+    }
+    if(editingStallContactLinkId){
+      const {error}=await db.from('stall_horse_contacts').update({role,emergency_priority:priority}).eq('id',editingStallContactLinkId);
+      if(error) throw error;
+    }else{
+      const {error}=await db.from('stall_horse_contacts').insert({horse_id:editingStallHorseId,contact_id:contactId,role,emergency_priority:priority});
+      if(error) throw error;
+    }
+    closeStallContactEditor();await loadStallContacts(editingStallHorseId);await loadStallHorses();
+    stallContactStatus('Kontakt erfolgreich gespeichert.');
+  }catch(error){stallContactStatus('Speichern fehlgeschlagen: '+error.message);}
+  finally{button.disabled=false;}
+}
+async function removeStallContactLink(linkId){
+  if(!stallAdminAllowed()||!editingStallHorseId) return;
+  if(!confirm('Diese Kontaktzuordnung wirklich entfernen? Der Kontakt selbst bleibt gespeichert.')) return;
+  const {error}=await db.from('stall_horse_contacts').delete().eq('id',linkId);
+  if(error){stallContactStatus('Entfernen fehlgeschlagen: '+error.message);return;}
+  await loadStallContacts(editingStallHorseId);await loadStallHorses();stallContactStatus('Zuordnung entfernt.');
+}
+
+
+// VERSION 4 – IST-STANDORT UND SAISONPLANUNG
+function stallLocationStatus(message){document.getElementById('stallLocationStatus').textContent=message||'';}
+function stallLocationLabel(areaId,placeId){
+  const area=stallAreas.find(a=>a.id===areaId);
+  const place=stallPlaces.find(p=>p.id===placeId);
+  return [area?.name,place?.name].filter(Boolean).join(' – ')||'Nicht erfasst';
+}
+function stallLocationFillAreas(id,selected){
+  const el=document.getElementById(id);el.replaceChildren();
+  const first=document.createElement('option');first.value='';first.textContent='Bitte Bereich auswählen';el.appendChild(first);
+  stallAreas.forEach(a=>{const o=document.createElement('option');o.value=a.id;o.textContent=a.name;el.appendChild(o);});
+  el.value=selected||'';
+}
+function stallLocationPlaces(which,selected=null){
+  const a=document.getElementById(({current:'stallCurrentArea',day:'stallDayArea',night:'stallNightArea'})[which]);
+  const p=document.getElementById(({current:'stallCurrentPlace',day:'stallDayPlace',night:'stallNightPlace'})[which]);
+  p.replaceChildren();
+  const first=document.createElement('option');first.value='';first.textContent='Kein bestimmter Platz';p.appendChild(first);
+  stallPlaces.filter(x=>x.area_id===a.value && x.active!==false).forEach(x=>{
+    const o=document.createElement('option');o.value=x.id;o.textContent=x.name+(x.capacity?' (Kapazität '+x.capacity+')':'');p.appendChild(o);
+  });
+  p.value=selected||'';
+}
+async function loadStallLocation(){
+  const horseId=editingStallHorseId;
+  const request=++stallLocationRequest;
+  const current=document.getElementById('stallCurrentLocation');
+  document.getElementById('stallLocationHistory').textContent='Wird geladen …';
+  if(!horseId){current.textContent='Bitte zuerst Pferd speichern.';return;}
+  stallLocationStatus('Standort wird geladen …');
+  const queries=[
+    db.from('stall_areas').select('id,name').order('name'),
+    db.from('stall_places').select('id,area_id,name,capacity,active').order('name'),
+    db.from('stall_horse_locations').select('horse_id,area_id,place_id,updated_at,updated_by').eq('horse_id',horseId).maybeSingle()
+  ];
+  // Verlauf mit Klarname via rollenbeschränkter RPC; temporäre Wechsel für Admin und Staff.
+  queries.push(db.rpc('stall_location_history_named',{p_horse_id:horseId}));
+  queries.push(db.from('stall_temporary_moves').select('id,horse_id,from_area_id,from_place_id,to_area_id,to_place_id,due_at,created_at,returned_at,created_by,return_confirmed_by').eq('horse_id',horseId).is('returned_at',null).order('due_at',{ascending:true}));
+  if(stallAdminAllowed()){
+    queries.push(db.from('stall_seasons').select('name').order('name'));
+    queries.push(db.from('stall_horse_schedules').select('id,season,day_area_id,day_place_id,night_area_id,night_place_id,day_starts_at,night_starts_at').eq('horse_id',horseId));
+  }
+  const r=await Promise.all(queries);
+  if(request!==stallLocationRequest || horseId!==editingStallHorseId)return;
+  const failure=r.find(x=>x.error);
+  if(failure){stallLocationStatus('Standort konnte nicht geladen werden: '+failure.error.message+' (Ist das V5-SQL bereits ausgeführt?)');return;}
+  stallAreas=r[0].data||[];stallPlaces=r[1].data||[];stallCurrentLocation=r[2].data;
+  stallLocationFillAreas('stallCurrentArea',stallCurrentLocation?.area_id);
+  stallLocationPlaces('current',stallCurrentLocation?.place_id);
+  current.textContent=stallLocationLabel(stallCurrentLocation?.area_id,stallCurrentLocation?.place_id);
+  stallLocationFillAreas('stallTempArea',null);
+  stallTempPlaces();
+  // Warnung erscheint spätestens beim Öffnen/Aktualisieren (keine Push-Benachrichtigungen).
+  renderStallTemporaryMoves(r[4].data||[]);
+  if(stallAdminAllowed()){
+    stallSeasonOptions=(r[5].data||[]).map(x=>x.name);
+    stallSeasonSchedules=r[6].data||[];
+    const select=document.getElementById('stallScheduleSeason');select.replaceChildren();
+    stallOrderedSchedules([...new Set(['year_round',...stallSeasonOptions,...stallSeasonSchedules.map(x=>x.season)])].map(season=>({season}))).forEach(({season})=>{
+      const o=document.createElement('option');o.value=season;o.textContent=stallSeasonLabel(season);select.appendChild(o);
+    });
+    select.value='year_round';
+    loadStallSeasonSchedule();
+  }
+  const history=r[3].data||[];
+  const list=document.getElementById('stallLocationHistory');list.replaceChildren();
+  if(!history.length)list.textContent='Noch keine Standortwechsel erfasst.';
+  history.forEach(item=>{
+    const p=document.createElement('p');p.className='stall-loc-note';
+    const d=item.changed_at?new Date(item.changed_at).toLocaleString('de-DE'):'Ohne Datum';
+    p.textContent=d+' · '+stallLocationLabel(item.old_area_id,item.old_place_id)+' → '+stallLocationLabel(item.new_area_id,item.new_place_id)+' · Durchgeführt von: '+(item.actor_name||'Unbekannt');
+    list.appendChild(p);
+  });
+  stallLocationStatus('');
+}
+async function saveStallCurrentLocation(){
+  if(!stallCanView() || !editingStallHorseId)return;
+  const areaId=document.getElementById('stallCurrentArea').value;
+  const placeId=document.getElementById('stallCurrentPlace').value||null;
+  if(!areaId){stallLocationStatus('Bitte Stallbereich auswählen.');return;}
+  if(placeId && !stallPlaces.some(p=>p.id===placeId && p.area_id===areaId)){
+    stallLocationStatus('Dieser Platz gehört nicht zum gewählten Bereich.');return;
+  }
+  if(stallCurrentLocation?.area_id===areaId && (stallCurrentLocation?.place_id||null)===placeId){
+    stallLocationStatus('Dieser Standort ist bereits erfasst.');return;
+  }
+  if(!confirm('Ist das Pferd tatsächlich am gewählten Standort? Änderung jetzt dokumentieren?'))return;
+  stallLocationStatus('Standortwechsel wird gespeichert …');
+  const payload={area_id:areaId,place_id:placeId,updated_by:user.id};
+  const result=stallCurrentLocation
+    ?await db.from('stall_horse_locations').update(payload).eq('horse_id',editingStallHorseId).select('horse_id')
+    :await db.from('stall_horse_locations').insert({...payload,horse_id:editingStallHorseId}).select('horse_id');
+  if(result.error || !result.data?.length){stallLocationStatus('Standortwechsel fehlgeschlagen: '+(result.error?.message||'Keine Änderung bestätigt.'));return;}
+  const id=editingStallHorseId;
+  await loadStallHorses();
+  if(editingStallHorseId===id){await loadStallLocation();if(!stallAdminAllowed())await loadStallOverview();stallLocationStatus('✅ Standortwechsel dokumentiert.');}
+}
+async function loadStallTempAlerts(){
+  if(!stallCanView())return;
+  const container=document.getElementById('stallTempAlerts');
+  const {data,error}=await db.from('stall_temporary_moves')
+    .select('horse_id,due_at').is('returned_at',null).lte('due_at',new Date().toISOString());
+  if(error){container.textContent='⚠️ Rückkehrwarnungen derzeit nicht verfügbar (V5-Datenbankeinrichtung prüfen).';return;}
+  container.replaceChildren();
+  (data||[]).forEach(x=>{
+    const horse=stallHorses.find(h=>h.id===x.horse_id);
+    const p=document.createElement('p');p.className='stall-location-warning';
+    p.textContent='🚨 Rückkehr überfällig: '+(horse?.name||'Pferd')+' · geplant '+new Date(x.due_at).toLocaleString('de-DE')+' · noch nicht bestätigt';
+    container.appendChild(p);
+  });
+}
+// VERSION 5 – ZEITLICH BEGRENZTE STANDORTWECHSEL / RÜCKKEHRBESTÄTIGUNG
+function stallTempPlaces(){
+  const area=document.getElementById('stallTempArea').value;
+  const select=document.getElementById('stallTempPlace');select.replaceChildren();
+  const initial=document.createElement('option');initial.value='';initial.textContent='Kein bestimmter Platz';select.appendChild(initial);
+  stallPlaces.filter(p=>p.area_id===area && p.active!==false).forEach(p=>{
+    const option=document.createElement('option');option.value=p.id;
+    option.textContent=p.name+(p.capacity?' (Kapazität '+p.capacity+')':'');select.appendChild(option);
+  });
+}
+function renderStallTemporaryMoves(moves){
+  const list=document.getElementById('stallTempMoves');list.replaceChildren();
+  if(!moves.length){const p=document.createElement('p');p.className='stall-loc-note';p.textContent='Keine offene vorübergehende Umstellung.';list.appendChild(p);return;}
+  moves.forEach(move=>{
+    const box=document.createElement('div');box.className='stall-location-box';
+    const late=Date.parse(move.due_at)<=Date.now();
+    if(late)box.style.border='2px solid #a94442';
+    const title=document.createElement('strong');title.textContent=late?'🚨 Rückkehr überfällig – Bestätigung fehlt':'⏰ Rückkehr geplant';box.appendChild(title);
+    const details=document.createElement('p');details.className='stall-loc-note';
+    details.textContent=stallLocationLabel(move.to_area_id,move.to_place_id)+' → '+stallLocationLabel(move.from_area_id,move.from_place_id)+' · geplant: '+new Date(move.due_at).toLocaleString('de-DE');box.appendChild(details);
+    const button=document.createElement('button');button.type='button';button.textContent='✅ Tatsächliche Rückkehr bestätigen';
+    button.onclick=()=>confirmStallTemporaryReturn(move.id,move.from_area_id,move.from_place_id);
+    box.appendChild(button);list.appendChild(box);
+  });
+}
+async function startStallTemporaryMove(){
+  if(!stallCanView()||!editingStallHorseId)return;
+  const area=document.getElementById('stallTempArea').value;
+  const place=document.getElementById('stallTempPlace').value||null;
+  const raw=document.getElementById('stallTempDue').value;
+  const due=new Date(raw);
+  if(!area){stallLocationStatus('Bitte Zielbereich auswählen.');return;}
+  if(!raw||!Number.isFinite(due.getTime())||due.getTime()<=Date.now()){
+    stallLocationStatus('Bitte eine Rückkehrzeit in der Zukunft auswählen.');return;
+  }
+  if(!stallCurrentLocation){stallLocationStatus('Bitte zunächst einen aktuellen Standort erfassen.');return;}
+  if(area===stallCurrentLocation.area_id && place===(stallCurrentLocation.place_id||null)){
+    stallLocationStatus('Ziel und aktueller Standort sind identisch.');return;
+  }
+  if(!confirm('Ist das Pferd JETZT tatsächlich am neuen Standort? Die Rückkehr wird nur als Erinnerung angelegt.'))return;
+  stallLocationStatus('Vorübergehende Umstellung wird gespeichert …');
+  // Atomare Datenbankfunktion: Ist-Standort und Termin zusammen speichern.
+  const {error}=await db.rpc('stall_start_temporary_move',{
+    p_horse_id:editingStallHorseId,p_to_area_id:area,p_to_place_id:place,p_due_at:due.toISOString()
+  });
+  if(error){stallLocationStatus('Umstellung fehlgeschlagen: '+error.message);return;}
+  const id=editingStallHorseId;await loadStallHorses();
+  if(id===editingStallHorseId){await loadStallLocation();stallLocationStatus('✅ Vorübergehende Umstellung dokumentiert. Rückkehr muss später bestätigt werden.');}
+}
+async function confirmStallTemporaryReturn(moveId,areaId,placeId){
+  if(!stallCanView()||!editingStallHorseId)return;
+  if(!confirm('Wurde das Pferd TATSÄCHLICH an seinen ursprünglichen Standort zurückgebracht?'))return;
+  stallLocationStatus('Rückkehr wird bestätigt …');
+  const {error}=await db.rpc('stall_confirm_temporary_return',{p_move_id:moveId});
+  if(error){stallLocationStatus('Rückkehr konnte nicht bestätigt werden: '+error.message);return;}
+  const id=editingStallHorseId;await loadStallHorses();
+  if(id===editingStallHorseId){await loadStallLocation();stallLocationStatus('✅ Tatsächliche Rückkehr mit Benutzer und Zeitpunkt bestätigt.');}
+}
+function loadStallSeasonSchedule(){
+  const season=document.getElementById('stallScheduleSeason').value;
+  const schedule=stallSeasonSchedules.find(s=>s.season===season);
+  for(const pair of [['day','stallDayArea','stallDayTime'],['night','stallNightArea','stallNightTime']]){
+    const [prefix,area,time]=pair;
+    stallLocationFillAreas(area,schedule?.[prefix+'_area_id']);
+    stallLocationPlaces(prefix,schedule?.[prefix+'_place_id']);
+    document.getElementById(time).value=(schedule?.[prefix+'_starts_at']|| (prefix==='day'?'08:00':'18:00')).slice(0,5);
+  }
+}
+async function saveStallSeasonSchedule(){
+  if(!stallAdminAllowed() || !editingStallHorseId)return;
+  const season=document.getElementById('stallScheduleSeason').value;
+  const day=document.getElementById('stallDayArea').value;
+  const night=document.getElementById('stallNightArea').value;
+  if(!season || !day || !night){stallLocationStatus('Bitte Saison und beide Stallbereiche auswählen.');return;}
+  const obj={horse_id:editingStallHorseId,season,
+    day_area_id:day,day_place_id:document.getElementById('stallDayPlace').value||null,
+    night_area_id:night,night_place_id:document.getElementById('stallNightPlace').value||null,
+    day_starts_at:document.getElementById('stallDayTime').value,
+    night_starts_at:document.getElementById('stallNightTime').value};
+  if(!obj.day_starts_at||!obj.night_starts_at||obj.day_starts_at===obj.night_starts_at){
+    stallLocationStatus('Bitte unterschiedliche gültige Wechselzeiten auswählen.');return;
+  }
+  stallLocationStatus('Saisonplan wird gespeichert …');
+  const existing=stallSeasonSchedules.find(s=>s.season===season);
+  const result=existing
+    ?await db.from('stall_horse_schedules').update(obj).eq('id',existing.id).select('id')
+    :await db.from('stall_horse_schedules').insert(obj).select('id');
+  if(result.error || !result.data?.length){stallLocationStatus('Saisonplan fehlgeschlagen: '+(result.error?.message||'Keine Änderung bestätigt.'));return;}
+  await loadStallLocation();
+  document.getElementById('stallScheduleSeason').value=season;
+  loadStallSeasonSchedule();
+  stallLocationStatus('✅ Saisonplan gespeichert.');
+}
+
+// FACILITIES
+
+async function loadFacilities(){
+
+  const {data,error}=await db
+    .from('facilities')
+    .select('*');
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  facilities=data || [];
+}
+
+// BUCHUNGEN LADEN
+
+async function loadBookings(){
+
+  if(!member) return;
+
+  const facility=
+    document.getElementById('facility').value;
+
+  const start=new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),1
+  );
+
+  const end=new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth()+1,0
+  );
+
+  const format=d=>
+    d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0');
+
+  const {data,error}=await db
+  .from('booking_calendar')
+  .select('id,facility_id,facility_name,booking_date,start_hour,member_name,note')
+  .eq('facility_id',facility)
+  .gte('booking_date',format(start))
+  .lte('booking_date',format(end));
+    
+  
+    
+    
+    
+
+  if(error){
+  alert('Kalenderfehler: ' + error.message);
+  console.error(error);
+  return;
+}
+
+  bookings=data || [];
+
+  try {
+  renderCalendar();
+} catch (err) {
+  alert('Anzeigefehler: ' + err.message);
+  console.error(err);
+}
+}
+
+// KALENDER
+
+function renderCalendar(){
+
+  const calendar=
+    document.getElementById('calendar');
+
+  calendar.innerHTML='';
+
+document.getElementById('monthLabel')
+  .textContent = currentDate.toLocaleDateString(
+    'de-DE',
+    { month: 'long', year: 'numeric' }
+  );
+
+  if(view==='month'){
+    renderMonth(calendar);
+  }
+
+  if(view==='week'){
+    renderWeek(calendar);
+  }
+
+  if(view==='day'){
+    renderDay(calendar);
+  }
+}
+
+// MONATSANSICHT
+
+function renderMonth(calendar){
+
+  calendar.className='calendar';
+
+  ['Mo','Di','Mi','Do','Fr','Sa','So']
+    .forEach(name=>{
+      const el=document.createElement('div');
+      el.className='dayname';
+      el.textContent=name;
+      calendar.appendChild(el);
+    });
+
+  const year=currentDate.getFullYear();
+  const month=currentDate.getMonth();
+
+  let first=new Date(year,month,1);
+  let offset=(first.getDay()+6)%7;
+
+  const days=new Date(year,month+1,0).getDate();
+
+  for(let i=0;i<offset;i++){
+    const empty=document.createElement('div');
+    empty.className='day other';
+    calendar.appendChild(empty);
+  }
+
+  for(let d=1;d<=days;d++){
+
+    const date=new Date(year,month,d);
+
+    const dateString=formatDate(date);
+
+    const cell=document.createElement('div');
+    cell.className='day';
+
+    if(dateString===formatDate(new Date())){
+      cell.classList.add('today');
+    }
+
+    cell.innerHTML=
+      '<div class="day-number">'+d+'</div>';
+
+    const dayBookings=bookings.filter(
+      b=>b.booking_date===dateString
+    );
+const capacity = {
+  halle: 2,
+  gross: 4,
+  klein: 2,
+  longierzirkel: 1
+}[document.getElementById('facility').value];
+
+const hours = [...new Set(
+  dayBookings.map(b => b.start_hour)
+)].sort((a, b) => a - b);
+
+hours.forEach(hour => {
+  const count = dayBookings.filter(
+    b => b.start_hour === hour
+  ).length;
+
+  const entry = document.createElement('div');
+entry.className = 'booking-entry ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
+entry.style.whiteSpace = 'pre-line';
+  entry.textContent =
+  String(hour).padStart(2, '0') + ' Uhr\n' +
+  count + '/' + capacity;
+
+  cell.appendChild(entry);
+});
+  
+
+    cell.onclick=()=>{
+      currentDate=date;
+      setView('day');
+    };
+
+    calendar.appendChild(cell);
+  }
+}
+
+// WOCHENANSICHT
+
+function renderWeek(calendar){
+
+  calendar.className='week-grid';
+
+  const monday=new Date(currentDate);
+  monday.setDate(
+    monday.getDate()-
+    ((monday.getDay()+6)%7)
+  );
+
+  for(let i=0;i<7;i++){
+
+    const date=new Date(monday);
+    date.setDate(monday.getDate()+i);
+
+    const column=document.createElement('div');
+    column.className='week-day';
+
+    column.innerHTML=
+      '<strong>'+
+      date.toLocaleDateString('de-DE',{
+        weekday:'short',day:'2-digit'
+      })+
+      '</strong>';
+
+    const dayBookings=bookings.filter(
+      b=>b.booking_date===formatDate(date)
+    );
+
+    const capacity = {
+  halle: 2,
+  gross: 4,
+  klein: 2,
+  longierzirkel: 1
+}[document.getElementById('facility').value];
+
+const hours = [...new Set(
+  dayBookings.map(b => b.start_hour)
+)].sort((a, b) => a - b);
+
+hours.forEach(hour => {
+  const count = dayBookings.filter(
+    b => b.start_hour === hour
+  ).length;
+
+  const slot = document.createElement('div');
+  slot.className = 'slot ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
+
+  slot.style.whiteSpace = 'pre-line';
+
+  slot.textContent =
+    String(hour).padStart(2, '0') + ' Uhr\n' +
+    count + '/' + capacity;
+
+  column.appendChild(slot);
+});
+
+    column.onclick=()=>{
+      currentDate=date;
+      setView('day');
+    };
+
+    calendar.appendChild(column);
+  }
+}
+
+// TAGESANSICHT
+
+function renderDay(calendar){
+
+  calendar.className='';
+
+  const date=formatDate(currentDate);
+
+  calendar.innerHTML=
+    '<h3>'+
+    currentDate.toLocaleDateString('de-DE',{
+      weekday:'long',day:'2-digit',
+      month:'long',year:'numeric'
+    })+
+    '</h3>';
+
+  const facility=document.getElementById('facility').value;
+
+  const capacity=facilities.find(
+    f=>f.id===facility
+  )?.capacity || 1;
+
+  for(let h=7;h<=20;h++){
+
+    const count=bookings.filter(
+      b=>b.booking_date===date &&
+      b.start_hour===h
+    ).length;
+
+    const slot=document.createElement('div');
+
+    slot.className = 'slot ' +
+  (count >= capacity
+    ? 'slot-full'
+    : count > 0
+      ? 'slot-partial'
+      : 'slot-free');
+
+    const slotBookings = bookings.filter(
+  b => b.booking_date === date &&
+       b.start_hour === h
+);
+
+const names = slotBookings
+  .map(b =>
+    (b.member_name || 'Unbekannt') +
+    (b.note ? ' – ' + b.note : '')
+  )
+  .join(', ');
+
+slot.textContent =
+  String(h).padStart(2, '0') +
+  ':00 Uhr – ' + count + '/' + capacity +
+  ' Plätze belegt' +
+  (names ? ' | ' + names : '');
+      
+      
+      
+
+    slot.onclick = async () => {
+  if (count >= capacity) {
+    alert('Dieser Zeitraum ist bereits vollständig belegt.');
+    return;
+  }
+
+  const uhrzeit = String(h).padStart(2, '0') + ':00';
+
+  if (!confirm(
+    'Möchtest du die Anlage am ' + date +
+    ' um ' + uhrzeit + ' Uhr buchen?'
+  )) return;
+const note = (prompt('Notiz zur Buchung (optional, max. 100 Zeichen):') || '').trim().slice(0, 100);
+  const { error } = await db.rpc('book_slot', {
+    p_facility: facility,
+    p_date: date,
+    p_hour: h,
+p_note: note
+  });
+
+if (error) {
+  if (error.code === '23505') {
+    alert('Du hast diese Anlage für diesen Zeitraum bereits gebucht.');
+  } else {
+    alert('Buchung nicht möglich: ' + error.message);
+  }
+  return;
+}
+
+  alert('Buchung erfolgreich!');
+
+  await loadBookings();
+  await loadMyBookings();
+};
+
+    calendar.appendChild(slot);
+  }
+}
+
+// DATUM
+
+function formatDate(date){
+
+  return date.getFullYear()+'-'+
+    String(date.getMonth()+1).padStart(2,'0')+'-'+
+    String(date.getDate()).padStart(2,'0');
+}
+
+// NAVIGATION
+
+function changeMonth(direction){
+
+  if(view==='week'){
+    currentDate.setDate(
+      currentDate.getDate()+direction*7
+    );
+  }else if(view==='day'){
+    currentDate.setDate(
+      currentDate.getDate()+direction
+    );
+  }else{
+    currentDate.setMonth(
+      currentDate.getMonth()+direction
+    );
+  }
+
+  loadBookings();
+}
+
+function goToday(){
+  currentDate=new Date();
+  loadBookings();
+}
+
+function setView(newView){
+  view=newView;
+  renderCalendar();
+}
+
+// BUCHUNG ERSTELLEN
+
+async function makeBooking(){
+
+  if(!member || !member.active || !member.approved){
+    return;
+  }
+
+  const facility=
+    document.getElementById('facility').value;
+
+  const date=
+    document.getElementById('bookingDate').value;
+
+  const hour=parseInt(
+    document.getElementById('bookingHour').value
+  );
+
+  if(!date){
+    document.getElementById('bookingMessage')
+      .textContent='Bitte Datum auswählen.';
+    return;
+  }
+
+  const {error}=await db.rpc('book_slot',{
+    p_facility:facility,
+    p_date:date,
+    p_hour:hour
+  });
+
+  if(error){
+    document.getElementById('bookingMessage')
+      .textContent='Buchung nicht möglich: '+error.message;
+    return;
+  }
+
+  document.getElementById('bookingMessage')
+    .textContent='Buchung erfolgreich! ✓';
+
+  currentDate=new Date(date+'T12:00:00');
+
+  await loadBookings();
+  await loadMyBookings();
+}
+
+// EIGENE BUCHUNGEN
+
+async function loadMyBookings(){
+
+  const {data,error}=await db
+    .from('bookings')
+    .select('*')
+    .eq('member_id',user.id)
+    .order('booking_date');
+
+  if(error) return;
+
+  const container=
+    document.getElementById('myBookings');
+
+  container.innerHTML='';
+
+  (data||[]).forEach(b=>{
+
+    const facility=facilities.find(
+      f=>f.id===b.facility_id
+    );
+
+    const row=document.createElement('div');
+    row.className='status';
+
+    row.textContent=
+      b.booking_date+' – '+
+      (facility?.name || b.facility_id)+
+      ' – '+String(b.start_hour).padStart(2,'0')+':00 Uhr ';
+
+    const button=document.createElement('button');
+    button.className='danger';
+    button.textContent='Stornieren';
+
+    button.onclick=()=>cancelBooking(b.id);
+
+    row.appendChild(button);
+    container.appendChild(row);
+  });
+}
+
+// STORNIEREN
+
+async function cancelBooking(id){
+
+  if(!confirm('Buchung wirklich stornieren?')) return;
+
+  const {error}=await db
+    .from('bookings')
+    .delete()
+    .eq('id',id);
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  await loadBookings();
+  await loadMyBookings();
+}
+
+// MITGLIEDERVERWALTUNG
+
+async function loadMembers(){
+
+  const {data,error}=await db
+    .from('members')
+    .select('*')
+    .order('full_name');
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const list=document.getElementById('membersList');
+  list.innerHTML='';
+
+  (data||[]).forEach(m=>{
+
+    const box=document.createElement('div');
+    box.className='status';
+
+    const title=document.createElement('strong');
+    title.textContent=(m.username || m.full_name)+' – '+m.role;
+
+    box.appendChild(title);
+
+    const info=document.createElement('p');
+    info.textContent=
+      'Aktiv: '+m.active+
+      ' | Freigegeben: '+m.approved;
+
+    box.appendChild(info);
+
+    if(m.role!=='admin'){
+
+      const approve=document.createElement('button');
+      approve.textContent='Freischalten';
+
+      approve.onclick=async()=>{
+        const {error}=await db.rpc(
+          'approve_member',
+          {target_member_id:m.id}
+        );
+
+        if(error){
+          alert(error.message);
+        }else{
+          loadMembers();
+        }
+      };
+
+      box.appendChild(approve);
+
+      const toggle=document.createElement('button');
+      toggle.className='secondary';
+      toggle.textContent=
+        m.active?'Deaktivieren':'Aktivieren';
+
+      toggle.onclick=async()=>{
+        const {error}=await db.rpc(
+          'set_member_active',
+          {
+           target_member_id:m.id,
+new_status:!m.active
+          }
+        );
+
+        if(error){
+          alert(error.message);
+        }else{
+          loadMembers();
+        }
+      };
+
+      box.appendChild(toggle);
+    }
+
+    list.appendChild(box);
+  });
+}
+// ADMIN – ALLE BUCHUNGEN
+
+async function loadAdminBookings() {
+  if (!member || member.role !== 'admin') return;
+
+  const container = document.getElementById('adminBookings');
+  if (!container) return;
+
+  container.textContent = 'Buchungen werden geladen ...';
+
+  const { data, error } = await db
+    .from('booking_calendar')
+    .select('id,facility_name,booking_date,start_hour,member_name')
+    .order('booking_date', { ascending: true })
+    .order('start_hour', { ascending: true });
+
+  if (error) {
+    container.textContent = 'Fehler: ' + error.message;
+    return;
+  }
+
+  container.innerHTML = '';
+
+  (data || []).forEach(b => {
+    const box = document.createElement('div');
+    box.className = 'status';
+
+    const info = document.createElement('p');
+    info.textContent =
+      b.booking_date + ' – ' +
+      b.facility_name + ' – ' +
+      String(b.start_hour).padStart(2, '0') + ':00 Uhr – ' +
+      b.member_name;
+
+    box.appendChild(info);
+   const cancelButton = document.createElement('button');
+cancelButton.textContent = 'Stornieren';
+cancelButton.style.backgroundColor = '#a34b47';
+
+cancelButton.onclick = async () => {
+  if (!confirm('Diese Buchung wirklich stornieren?')) return;
+
+  const { error } = await db
+    .from('bookings')
+    .delete()
+    .eq('id', b.id);
+
+  if (error) {
+    alert('Stornierung fehlgeschlagen: ' + error.message);
+    return;
+  }
+
+  await loadAdminBookings();
+  await loadBookings();
+  await loadMyBookings();
+};
+
+box.appendChild(cancelButton); container.appendChild(box);
+  });
+}
+// ABMELDEN
+
+async function logout(){
+  await db.auth.signOut();
+  location.reload();
+}
+
+// AUTH STATUS
+
+db.auth.onAuthStateChange(
+  async(event,session)=>{
+    if(event==='SIGNED_IN' && session?.user){
+      if(!user){
+        await startApp(session.user);
+      }
+    }
+  }
+);
+
+// DATUM VOREINSTELLEN
+
+document.getElementById('bookingDate').value=
+  formatDate(new Date());
+
+</script>
+
+</body>
+</html>
