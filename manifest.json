@@ -2,7 +2,7 @@
   "name": "Reitclub Lochau – Arena Booking",
   "short_name": "Reitclub Lochau",
   "description": "Online-Belegungskalender des Reitclub Lochau",
-  "start_url": "./",
+  "start_url": "./reitclub_lochau_stallmanagement_v20_push.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F5F2EB",
