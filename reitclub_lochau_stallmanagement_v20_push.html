@@ -2609,7 +2609,8 @@ async function pushRegister(button){
   const pref=await db.from('app_notification_settings').select('push_enabled').eq('user_id',uid).maybeSingle();
   if(pref.error)throw pref.error;if(!pref.data?.push_enabled)throw new Error('Bitte zuerst Push für dein Konto erlauben und speichern.');
   const key=await db.functions.invoke('rapid-responder',{body:{}});
-  if(key.error||!key.data?.publicKey)throw new Error('Öffentlicher Schlüssel konnte nicht geladen werden.');
+  if(key.error) throw new Error('Supabase: '+key.error.message);
+if(!key.data?.publicKey) throw new Error('Antwort enthält keinen öffentlichen Schlüssel.');
   const reg=await navigator.serviceWorker.register('./lochau-push-worker.js',{scope:'./'});
   await navigator.serviceWorker.ready;
   let sub=await reg.pushManager.getSubscription();
