@@ -2,7 +2,7 @@
   "name": "Reitclub Lochau – Arena Booking",
   "short_name": "Reitclub Lochau",
   "id": "./lochau-push",
-  "start_url": "./reitclub_lochau_stallmanagement_v19_push.html",
+  "start_url": "./reitclub_lochau_stallmanagement_v20_push.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f3",
