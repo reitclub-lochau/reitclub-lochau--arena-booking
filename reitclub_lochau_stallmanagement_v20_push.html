@@ -415,6 +415,7 @@ td,th {
          placeholder="Passwort">
 
   <button onclick="login()">Anmelden</button>
+  <button type="button" class="secondary" id="forgotPasswordButton" onclick="requestPasswordReset(this)">Passwort vergessen?</button>
 
   <button class="secondary"
           onclick="register()">
@@ -422,6 +423,19 @@ td,th {
   </button>
 
   <p id="loginMessage"></p>
+</section>
+
+<section id="passwordRecovery" class="card hidden">
+  <h2>Neues Passwort vergeben</h2>
+  <p id="recoveryStatus" role="status" aria-live="polite">Rücksetzlink wird geprüft …</p>
+  <form id="recoveryForm" class="hidden" onsubmit="event.preventDefault();saveRecoveryPassword()">
+    <label for="recoveryPassword">Neues Passwort (mindestens 12 Zeichen)</label>
+    <input id="recoveryPassword" type="password" autocomplete="new-password" minlength="12" required>
+    <label for="recoveryConfirm">Neues Passwort wiederholen</label>
+    <input id="recoveryConfirm" type="password" autocomplete="new-password" minlength="12" required>
+    <button id="recoverySave" type="submit">Neues Passwort speichern</button>
+  </form>
+  <button type="button" class="secondary" onclick="leaveRecovery()">Zur Anmeldung</button>
 </section>
 
 <!-- APP -->
@@ -440,7 +454,7 @@ td,th {
     </button>
   </div>
 
-  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V20 – Korrektur 1</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät aktivieren.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
+  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V20 – Korrektur 2 · Passwort-Hilfe</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät aktivieren.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
   <section id="msgCenter" class="card hidden">
     <h2>🔔 Nachrichtencenter</h2>
     <div class="controls"><button class="secondary" onclick="msgLoad()">↻ Aktualisieren</button><button class="secondary" onclick="msgToggle()">Schließen</button></div>
@@ -745,6 +759,11 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 'sb_publishable_-NueqNFJb7kuCIaWjCo3Sw_SVugvyv_';
 
+const initialAuthHash = new URLSearchParams(location.hash.slice(1));
+const initialAuthQuery = new URLSearchParams(location.search);
+let recoveryMode = initialAuthHash.get('type') === 'recovery' || initialAuthQuery.get('type') === 'recovery' || initialAuthQuery.get('reset') === '1';
+let recoveryUserId = null;
+let recoverySaved = false;
 const db = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
@@ -829,6 +848,50 @@ async function login(){
   await startApp(data.user);
 }
 
+// PASSWORT ZURÜCKSETZEN
+function showRecovery(message, ready=false){
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('passwordRecovery').classList.remove('hidden');
+  document.getElementById('recoveryStatus').textContent=message;
+  document.getElementById('recoveryForm').classList.toggle('hidden',!ready);
+}
+async function requestPasswordReset(button){
+  const field=document.getElementById('email');
+  if(!field.value.trim() || !field.checkValidity()) {showMessage('Bitte gib zuerst deine E-Mail-Adresse ein.');field.focus();return;}
+  button.disabled=true;
+  try{
+    const redirect=new URL(location.pathname,location.origin);
+    redirect.searchParams.set('reset','1');
+    const {error}=await db.auth.resetPasswordForEmail(field.value.trim(),{redirectTo:redirect.href});
+    if(error) throw error;
+    showMessage('Wenn ein Konto zu dieser Adresse besteht, erhältst du eine E-Mail zum Zurücksetzen. Bitte auch den Spamordner prüfen.');
+  }catch(e){showMessage('Die Rücksetz-E-Mail konnte nicht angefordert werden. Bitte später erneut versuchen oder die Stallleitung kontaktieren.');}
+  finally{button.disabled=false;}
+}
+async function saveRecoveryPassword(){
+  if(!recoveryMode || !recoveryUserId || recoverySaved)return;
+  const a=document.getElementById('recoveryPassword'), b=document.getElementById('recoveryConfirm'), button=document.getElementById('recoverySave'), status=document.getElementById('recoveryStatus');
+  if(a.value.length<12 || a.value!==b.value){status.textContent='Bitte mindestens 12 Zeichen eingeben und beide Passwörter identisch wiederholen.';return;}
+  button.disabled=true;
+  try{
+    const {data,error:authError}=await db.auth.getUser();
+    if(authError || data.user?.id!==recoveryUserId) throw new Error('Rücksetzlink ist nicht mehr gültig.');
+    const {error}=await db.auth.updateUser({password:a.value});
+    if(error)throw error;
+    recoverySaved=true;a.value='';b.value='';
+    showRecovery('Passwort erfolgreich geändert. Bitte melde dich mit deinem neuen Passwort an.');
+    const result=await db.auth.signOut({scope:'global'});
+    if(result.error)showRecovery('Passwort geändert. Die Abmeldung konnte nicht bestätigt werden. Bitte erneut „Zur Anmeldung“ wählen.');
+  }catch(e){status.textContent='Passwort konnte nicht geändert werden: '+(e.message||'Bitte neuen Rücksetzlink anfordern.');}
+  finally{button.disabled=false;}
+}
+async function leaveRecovery(){
+  if(recoveryUserId){const {error}=await db.auth.signOut({scope:'local'});if(error && error.name!=='AuthSessionMissingError'){showRecovery('Abmeldung fehlgeschlagen. Bitte erneut versuchen.');return;}}
+  location.replace(location.pathname);
+}
+if(recoveryMode) showRecovery('Rücksetzlink wird geprüft. Falls er abgelaufen ist, bitte einen neuen Link anfordern.');
+
 // REGISTRIERUNG
 
 async function register(){
@@ -882,6 +945,7 @@ function showMessage(message){
 // APP STARTEN
 
 async function startApp(authUser){
+  if(recoveryMode)return;
 
   user=authUser;
 
@@ -2510,15 +2574,19 @@ async function logout(){
 
 // AUTH STATUS
 
-db.auth.onAuthStateChange(
-  async(event,session)=>{
-    if(event==='SIGNED_IN' && session?.user){
-      if(!user){
-        await startApp(session.user);
-      }
-    }
+db.auth.onAuthStateChange((event,session)=>{
+  if(event==='PASSWORD_RECOVERY' && session?.user){
+    recoveryMode=true;
+    recoveryUserId=session.user.id;
+    history.replaceState(null,'',location.pathname+'?reset=1');
+    showRecovery('Bitte vergib dein neues Passwort.',true);
+    return;
   }
-);
+  if(recoveryMode)return;
+  if(event==='SIGNED_IN' && session?.user && !user){
+    setTimeout(()=>{if(!recoveryMode && !user)startApp(session.user);},0);
+  }
+});
 
 // DATUM VOREINSTELLEN
 
