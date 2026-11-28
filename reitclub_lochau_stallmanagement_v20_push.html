@@ -454,7 +454,7 @@ td,th {
     </button>
   </div>
 
-  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V20 – Korrektur 2 · Passwort-Hilfe</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät aktivieren.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
+  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V20 – Korrektur 3 · Automatische Geräteregistrierung</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät einmalig aktivieren. Bei erneuter Anmeldung wird die Registrierung automatisch wiederhergestellt, solange die Geräteberechtigung erhalten bleibt.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
   <section id="msgCenter" class="card hidden">
     <h2>🔔 Nachrichtencenter</h2>
     <div class="controls"><button class="secondary" onclick="msgLoad()">↻ Aktualisieren</button><button class="secondary" onclick="msgToggle()">Schließen</button></div>
@@ -978,7 +978,7 @@ async function startApp(authUser){
   document.getElementById('notifyButton').classList.toggle('hidden',!active);
   document.getElementById('notifySettings').classList.add('hidden');
   document.getElementById('msgAdmin').classList.toggle('hidden',!active || member.role!=='admin');
-  if(active) setTimeout(()=>msgLoad(),0);
+  if(active){ setTimeout(()=>msgLoad(),0); void pushRestore(authUser.id); }
 document.getElementById('calendarCard').classList.toggle('hidden', !active);
   document.getElementById('memberStatus')
     .textContent=active
@@ -2567,9 +2567,18 @@ box.appendChild(cancelButton); container.appendChild(box);
 // ABMELDEN
 
 async function logout(){
-  try { await pushDetach(); } catch(e) { if(!confirm("Geräteregistrierung konnte nicht entfernt werden. Trotzdem abmelden?")) return; }
-  await db.auth.signOut();
-  location.reload();
+  if(pushBusy || pushSigningOut){alert('Bitte warte, bis die Geräteregistrierung abgeschlossen ist.');return;}
+  pushSigningOut=true;
+  try {
+    // Server-Zuordnung entfernen, Browser-Abo und lokale Zustimmung behalten.
+    await pushDetach(false);
+    const {error}=await db.auth.signOut();
+    if(error)throw error;
+    location.reload();
+  } catch(e){
+    pushSigningOut=false;
+    alert('Abmeldung nicht abgeschlossen. Bitte erneut versuchen: '+e.message);
+  }
 }
 
 // AUTH STATUS
@@ -2664,13 +2673,42 @@ async function notifySave(){
 }
 
 
-// V19: explicit, opt-in device registration.
+// V20 Korrektur 3: geräte- und kontobezogene Zustimmung, Wiederherstellung ohne Berechtigungsdialog.
+let pushBusy=false, pushSigningOut=false;
+function pushConsentKey(uid){return 'lochau.push.optin.v1.'+uid;}
+function pushConsent(uid){try{return localStorage.getItem(pushConsentKey(uid))==='yes';}catch(e){return false;}}
+function pushSetConsent(uid,enabled){if(enabled)localStorage.setItem(pushConsentKey(uid),'yes');else localStorage.removeItem(pushConsentKey(uid));}
+async function pushStore(uid,sub){
+ if(!msgAllowed()||user.id!==uid||pushSigningOut)throw new Error('Anmeldung hat sich geändert.');
+ const json=sub.toJSON();
+ if(!json.keys?.p256dh||!json.keys?.auth)throw new Error('Geräteschlüssel fehlen.');
+ const result=await db.from('app_push_subscriptions').upsert({user_id:uid,endpoint:sub.endpoint,p256dh:json.keys.p256dh,auth_key:json.keys.auth},{onConflict:'endpoint'}).select('id').single();
+ if(result.error)throw result.error;
+}
+async function pushRestore(uid){
+ if(pushBusy||pushSigningOut||!msgAllowed()||user.id!==uid||!pushSupported()||!pushConsent(uid))return;
+ const status=document.getElementById('pushStatus');
+ pushBusy=true;
+ try{
+  const pref=await db.from('app_notification_settings').select('push_enabled').eq('user_id',uid).maybeSingle();
+  if(pref.error)throw pref.error;
+  if(!pref.data?.push_enabled)return;
+  if(Notification.permission!=='granted'){status.textContent='Bitte dieses Gerät erneut aktivieren.';return;}
+  const reg=await navigator.serviceWorker.getRegistration(location.href);
+  const sub=reg?await reg.pushManager.getSubscription():null;
+  if(!sub){status.textContent='Geräte-Abo fehlt. Bitte dieses Gerät erneut aktivieren.';return;}
+  await pushStore(uid,sub);
+  status.textContent='Dieses Gerät ist automatisch wieder registriert.';
+ }catch(e){status.textContent='Automatische Registrierung fehlgeschlagen: '+e.message;}
+ finally{pushBusy=false;}
+}
 function pushSupported(){return window.isSecureContext && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;}
 function pushBytes(key){const b=atob(key.replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(key.length/4)*4,'='));return Uint8Array.from(b,c=>c.charCodeAt(0));}
 async function pushRegister(button){
  const status=document.getElementById('pushStatus');
  if(!msgAllowed()||!pushSupported()){status.textContent='Push hier nicht verfügbar. Auf dem iPhone vom Home-Bildschirm starten.';return;}
- button.disabled=true;
+ if(pushBusy||pushSigningOut)return;
+ pushBusy=true;button.disabled=true;
  try{
   // Permission request must be initiated directly by the user gesture.
   const permission=await Notification.requestPermission();
@@ -2685,22 +2723,20 @@ if(!key.data?.publicKey) throw new Error('Antwort enthält keinen öffentlichen 
   await navigator.serviceWorker.ready;
   let sub=await reg.pushManager.getSubscription();
   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushBytes(key.data.publicKey.trim())});
-  const json=sub.toJSON();
-  if(!json.keys?.p256dh||!json.keys?.auth)throw new Error('Geräteschlüssel fehlen.');
-  const result=await db.from('app_push_subscriptions').upsert({user_id:uid,endpoint:sub.endpoint,p256dh:json.keys.p256dh,auth_key:json.keys.auth},{onConflict:'endpoint'}).select('id').single();
-  if(result.error){await sub.unsubscribe();throw result.error;}
+  await pushStore(uid,sub);
+  try{pushSetConsent(uid,true);}catch(e){status.textContent='Gerät registriert, aber automatische Wiederanmeldung kann nicht gespeichert werden.';return;}
   status.textContent='Dieses Gerät ist registriert. Bereit für eine Testmitteilung.';
- }catch(e){status.textContent='Aktivierung fehlgeschlagen: '+e.message;}finally{button.disabled=false;}
+ }catch(e){status.textContent='Aktivierung fehlgeschlagen: '+e.message;}finally{pushBusy=false;button.disabled=false;}
 }
-async function pushDetach(){
+async function pushDetach(unsubscribe=true){
  if(!pushSupported()||!user)return;
  const reg=await navigator.serviceWorker.getRegistration(location.href);
  if(!reg)return;const sub=await reg.pushManager.getSubscription();if(!sub)return;
  const result=await db.from('app_push_subscriptions').delete().eq('user_id',user.id).eq('endpoint',sub.endpoint);
  if(result.error)throw result.error;
- await sub.unsubscribe();
+ if(unsubscribe)await sub.unsubscribe();
 }
-async function pushRemove(button){const status=document.getElementById('pushStatus');button.disabled=true;try{await pushDetach();status.textContent='Dieses Gerät ist deaktiviert.';}catch(e){status.textContent='Deaktivierung fehlgeschlagen: '+e.message;}finally{button.disabled=false;}}
+async function pushRemove(button){if(pushBusy||pushSigningOut||!msgAllowed())return;const status=document.getElementById('pushStatus');pushBusy=true;button.disabled=true;try{pushSetConsent(user.id,false);await pushDetach(true);status.textContent='Dieses Gerät ist deaktiviert.';}catch(e){status.textContent='Deaktivierung fehlgeschlagen: '+e.message;}finally{pushBusy=false;button.disabled=false;}}
 
 </script>
 
