@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reitclub Lochau – Arena Booking · Stallmanagement V20</title>
+<title>Reitclub Lochau – Arena Booking · Stallmanagement V21</title>
 <link rel="apple-touch-icon" href="reitclub_lochau_app_icon.png">
 <link rel="icon" type="image/png" href="reitclub_lochau_app_icon.png">
 <link rel="manifest" href="manifest-push.json">
@@ -454,7 +454,7 @@ td,th {
     </button>
   </div>
 
-  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V20 – Korrektur 3 · Automatische Geräteregistrierung</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät einmalig aktivieren. Bei erneuter Anmeldung wird die Registrierung automatisch wiederhergestellt, solange die Geräteberechtigung erhalten bleibt.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
+  <section id="notifySettings" class="card hidden"><h2>🔔 Benachrichtigungseinstellungen</h2><small>V21 – Flexible Buchungsintervalle</small><p>Freiwillig und jederzeit änderbar. Hier speicherst du deine Wünsche. Automatische Buchungs- und Stornierungsnachrichten sind verfügbar. Zeitgesteuerte Erinnerungen sind noch nicht freigeschaltet. Mitteilungen bleiben im Nachrichtencenter sichtbar.</p><form id="notifyForm" onsubmit="event.preventDefault();notifySave()"><fieldset id="notifyFields" disabled style="border:0;padding:0;margin:0"><h3>Allgemein</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_push_enabled"> Pushnachrichten für mein Konto erlauben</label><h3>Welche Nachrichten?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_new_bookings"> Neue Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_today_only" checked> Buchungen und Stornierungen nur für heute</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_cancellations"> Stornierungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_fully_booked"> Vollständig ausgebuchte Reitflächen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_slot_available"> Wieder verfügbare Plätze</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_bookings"> Bestätigung eigener Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_own_reminders"> Erinnerungen an eigene Buchungen</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_admin_messages" checked> Mitteilungen der Stallleitung</label><h3>Welche Reitflächen?</h3><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_halle" checked> Reithalle</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_gross" checked> Großer Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_klein" checked> Kleiner Reitplatz</label><label style="display:flex;align-items:center;gap:12px;padding:9px 0"><input style="width:22px;height:22px;flex-shrink:0" type="checkbox" id="notify_facility_longierzirkel" checked> Longierzirkel</label></fieldset><button id="notifySaveButton" disabled type="submit">Einstellungen speichern</button></form><button class="secondary" onclick="notifyLoad()">↻ Neu laden</button> <button class="secondary" onclick="notifyToggle()">Schließen</button><p id="notifyStatus" role="status" aria-live="polite"></p><h3>Dieses Gerät</h3><p>Auf dem iPhone: App über Safari zum Home-Bildschirm hinzufügen und von dort öffnen. Erst Einstellungen speichern, dann dieses Gerät einmalig aktivieren. Bei erneuter Anmeldung wird die Registrierung automatisch wiederhergestellt, solange die Geräteberechtigung erhalten bleibt.</p><button type="button" onclick="pushRegister(this)">🔔 Dieses Gerät aktivieren</button> <button type="button" class="secondary" onclick="pushRemove(this)">Dieses Gerät deaktivieren</button><p id="pushStatus" role="status"></p></section>
   <section id="msgCenter" class="card hidden">
     <h2>🔔 Nachrichtencenter</h2>
     <div class="controls"><button class="secondary" onclick="msgLoad()">↻ Aktualisieren</button><button class="secondary" onclick="msgToggle()">Schließen</button></div>
@@ -817,13 +817,23 @@ function stallToday(){const d=new Date();return new Intl.DateTimeFormat('en-CA',
 const hourSelect =
 document.getElementById('bookingHour');
 
-for(let h=7;h<=20;h++){
-  let option=document.createElement('option');
-  option.value=h;
-  option.textContent=
-    String(h).padStart(2,'0')+':00 Uhr';
-  hourSelect.appendChild(option);
+function slotLength(facility=document.getElementById('facility').value){
+  return facility==='longierzirkel' && Number(facilities.find(f=>f.id===facility)?.slot_minutes)===30 ? 30 : 60;
 }
+function minuteLabel(n){return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
+function timeRange(n,d){return minuteLabel(n)+'–'+minuteLabel(n+d);}
+function bookingStart(b){return Number(b.start_hour)*60+Number(b.start_minute??0);}
+function bookingDuration(b){return Number(b.duration_minutes??60);}
+function bookingRange(b){return timeRange(bookingStart(b),bookingDuration(b));}
+function overlaps(b,n,d){return bookingStart(b)<n+d && bookingStart(b)+bookingDuration(b)>n;}
+function slots(d){return Array.from({length:840/d},(_,i)=>420+i*d);}
+function refreshHourSelect(){
+ const prev=hourSelect.value, d=slotLength();
+ hourSelect.replaceChildren();
+ for(const n of slots(d)){const o=document.createElement('option');o.value=n;o.textContent=timeRange(n,d)+' Uhr';hourSelect.appendChild(o);}
+ if([...hourSelect.options].some(o=>o.value===prev))hourSelect.value=prev;
+}
+refreshHourSelect();
 
 // LOGIN
 
@@ -1935,13 +1945,19 @@ async function loadFacilities(){
   }
 
   facilities=data || [];
+  refreshHourSelect();
 }
 
 // BUCHUNGEN LADEN
+let calendarRequest=0;
 
 async function loadBookings(){
 
   if(!member) return;
+  const request=++calendarRequest;
+  await loadFacilities();
+  if(request!==calendarRequest)return;
+  refreshHourSelect();
 
   const facility=
     document.getElementById('facility').value;
@@ -1956,6 +1972,12 @@ async function loadBookings(){
     currentDate.getMonth()+1,0
   );
 
+  if(view==='week'){
+    const monday=new Date(currentDate);monday.setDate(monday.getDate()-((monday.getDay()+6)%7));
+    const sunday=new Date(monday);sunday.setDate(sunday.getDate()+6);
+    if(monday<start)start.setTime(monday.getTime());
+    if(sunday>end)end.setTime(sunday.getTime());
+  }
   const format=d=>
     d.getFullYear()+'-'+
     String(d.getMonth()+1).padStart(2,'0')+'-'+
@@ -1963,7 +1985,7 @@ async function loadBookings(){
 
   const {data,error}=await db
   .from('booking_calendar')
-  .select('id,facility_id,facility_name,booking_date,start_hour,member_name,note')
+  .select('id,facility_id,facility_name,booking_date,start_hour,start_minute,duration_minutes,member_name,note')
   .eq('facility_id',facility)
   .gte('booking_date',format(start))
   .lte('booking_date',format(end));
@@ -1979,6 +2001,7 @@ async function loadBookings(){
   return;
 }
 
+  if(request!==calendarRequest || facility!==document.getElementById('facility').value)return;
   bookings=data || [];
 
   try {
@@ -2071,13 +2094,12 @@ const capacity = {
   longierzirkel: 1
 }[document.getElementById('facility').value];
 
-const hours = [...new Set(
-  dayBookings.map(b => b.start_hour)
-)].sort((a, b) => a - b);
+const duration=slotLength();
+const hours=slots(duration).filter(n=>dayBookings.some(b=>overlaps(b,n,duration)));
 
 hours.forEach(hour => {
   const count = dayBookings.filter(
-    b => b.start_hour === hour
+    b => overlaps(b,hour,duration)
   ).length;
 
   const entry = document.createElement('div');
@@ -2089,7 +2111,7 @@ entry.className = 'booking-entry ' +
       : 'slot-free');
 entry.style.whiteSpace = 'pre-line';
   entry.textContent =
-  String(hour).padStart(2, '0') + ' Uhr\n' +
+  timeRange(hour,duration) + '\n' +
   count + '/' + capacity;
 
   cell.appendChild(entry);
@@ -2143,13 +2165,12 @@ function renderWeek(calendar){
   longierzirkel: 1
 }[document.getElementById('facility').value];
 
-const hours = [...new Set(
-  dayBookings.map(b => b.start_hour)
-)].sort((a, b) => a - b);
+const duration=slotLength();
+const hours=slots(duration).filter(n=>dayBookings.some(b=>overlaps(b,n,duration)));
 
 hours.forEach(hour => {
   const count = dayBookings.filter(
-    b => b.start_hour === hour
+    b => overlaps(b,hour,duration)
   ).length;
 
   const slot = document.createElement('div');
@@ -2163,7 +2184,7 @@ hours.forEach(hour => {
   slot.style.whiteSpace = 'pre-line';
 
   slot.textContent =
-    String(hour).padStart(2, '0') + ' Uhr\n' +
+    timeRange(hour,duration) + '\n' +
     count + '/' + capacity;
 
   column.appendChild(slot);
@@ -2200,11 +2221,12 @@ function renderDay(calendar){
     f=>f.id===facility
   )?.capacity || 1;
 
-  for(let h=7;h<=20;h++){
+  const duration=slotLength(facility);
+  for(const h of slots(duration)){
 
     const count=bookings.filter(
       b=>b.booking_date===date &&
-      b.start_hour===h
+      overlaps(b,h,duration)
     ).length;
 
     const slot=document.createElement('div');
@@ -2218,7 +2240,7 @@ function renderDay(calendar){
 
     const slotBookings = bookings.filter(
   b => b.booking_date === date &&
-       b.start_hour === h
+       overlaps(b,h,duration)
 );
 
 const names = slotBookings
@@ -2229,8 +2251,8 @@ const names = slotBookings
   .join(', ');
 
 slot.textContent =
-  String(h).padStart(2, '0') +
-  ':00 Uhr – ' + count + '/' + capacity +
+  timeRange(h,duration) +
+  ' Uhr – ' + count + '/' + capacity +
   ' Plätze belegt' +
   (names ? ' | ' + names : '');
       
@@ -2243,7 +2265,7 @@ slot.textContent =
     return;
   }
 
-  const uhrzeit = String(h).padStart(2, '0') + ':00';
+  const uhrzeit = timeRange(h,duration);
 
   if (!confirm(
     'Möchtest du die Anlage am ' + date +
@@ -2253,7 +2275,8 @@ const note = (prompt('Notiz zur Buchung (optional, max. 100 Zeichen):') || '').t
   const { error } = await db.rpc('book_slot', {
     p_facility: facility,
     p_date: date,
-    p_hour: h,
+    p_hour: Math.floor(h/60),
+    p_minute: h%60,
 p_note: note
   });
 
@@ -2298,9 +2321,8 @@ function changeMonth(direction){
       currentDate.getDate()+direction
     );
   }else{
-    currentDate.setMonth(
-      currentDate.getMonth()+direction
-    );
+    currentDate.setDate(1);
+    currentDate.setMonth(currentDate.getMonth()+direction);
   }
 
   loadBookings();
@@ -2313,7 +2335,7 @@ function goToday(){
 
 function setView(newView){
   view=newView;
-  renderCalendar();
+  loadBookings();
 }
 
 // BUCHUNG ERSTELLEN
@@ -2343,7 +2365,9 @@ async function makeBooking(){
   const {error}=await db.rpc('book_slot',{
     p_facility:facility,
     p_date:date,
-    p_hour:hour
+    p_hour:Math.floor(hour/60),
+    p_minute:hour%60,
+    p_note:null
   });
 
   if(error){
@@ -2369,7 +2393,7 @@ async function loadMyBookings(){
     .from('bookings')
     .select('*')
     .eq('member_id',user.id)
-    .order('booking_date');
+    .order('booking_date').order('start_hour').order('start_minute');
 
   if(error) return;
 
@@ -2390,7 +2414,7 @@ async function loadMyBookings(){
     row.textContent=
       b.booking_date+' – '+
       (facility?.name || b.facility_id)+
-      ' – '+String(b.start_hour).padStart(2,'0')+':00 Uhr ';
+      ' – '+bookingRange(b)+' Uhr ';
 
     const button=document.createElement('button');
     button.className='danger';
@@ -2516,9 +2540,10 @@ async function loadAdminBookings() {
 
   const { data, error } = await db
     .from('booking_calendar')
-    .select('id,facility_name,booking_date,start_hour,member_name')
+    .select('id,facility_name,booking_date,start_hour,start_minute,duration_minutes,member_name')
     .order('booking_date', { ascending: true })
-    .order('start_hour', { ascending: true });
+    .order('start_hour', { ascending: true })
+    .order('start_minute', { ascending: true });
 
   if (error) {
     container.textContent = 'Fehler: ' + error.message;
@@ -2535,7 +2560,7 @@ async function loadAdminBookings() {
     info.textContent =
       b.booking_date + ' – ' +
       b.facility_name + ' – ' +
-      String(b.start_hour).padStart(2, '0') + ':00 Uhr – ' +
+      bookingRange(b) + ' Uhr – ' +
       b.member_name;
 
     box.appendChild(info);
@@ -2641,7 +2666,7 @@ setInterval(()=>{if(msgAllowed()&&!document.hidden)msgLoad();},60000);
 
 
 // V18: account-specific preferences; no device registration or push delivery yet.
-const notifyDefaults={"push_enabled": false, "new_bookings": false, "today_only": true, "cancellations": false, "fully_booked": false, "own_bookings": false, "own_reminders": false, "admin_messages": true, "facility_halle": true, "facility_gross": true, "facility_klein": true, "facility_longierzirkel": true};
+const notifyDefaults={"push_enabled": false, "new_bookings": false, "today_only": true, "cancellations": false, "fully_booked": false, "slot_available": false, "own_bookings": false, "own_reminders": false, "admin_messages": true, "facility_halle": true, "facility_gross": true, "facility_klein": true, "facility_longierzirkel": true};
 let notifyRequest=0, notifyLoadedUser=null, notifyBusy=false;
 function notifyToggle(){if(!msgAllowed())return;const el=document.getElementById('notifySettings');if(notifyBusy)return;el.classList.toggle('hidden');if(!el.classList.contains('hidden'))notifyLoad();}
 function notifyLock(lock){document.getElementById('notifyFields').disabled=lock;document.getElementById('notifySaveButton').disabled=lock;}
